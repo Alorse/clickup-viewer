@@ -16,6 +16,8 @@ export const NO_TASK_SELECTED = l10n.t("NO_TASK_SELECTED");
 export const NO_LIST_ID = l10n.t("NO_LIST_ID");
 export const STATUS_READ_ERROR = l10n.t("STATUS_READ_ERROR");
 export const TOKEN_NOT_FOUND = l10n.t("TOKEN_NOT_FOUND");
+export const INVALID_TOKEN = l10n.t("INVALID_TOKEN");
+export const YOUR_TOKEN = l10n.t("YOUR_TOKEN");
 
 
 export const TASK_UPDATE_MESSAGE = l10n.t('TASK_UPDATE_MESSAGE');

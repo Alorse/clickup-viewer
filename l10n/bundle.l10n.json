@@ -5,7 +5,7 @@
   "NO_CLICKUP_TOKEN_SET": "No clickup token has been set!",
   "NO_LIST_ID": "Impossible to retrieve states from reference list",
   "NO_TASK_SELECTED": "No ClickUp task has been selected",
-  "SET_TOKEN": "Your token has been successfully saved",
+  "SET_TOKEN": "Welcome to ClickUp in my VSCode",
   "STATUS_READ_ERROR": "An error occurred while reading status",
   "TOKEN_NOT_FOUND": "No token was found",
   "TASK_FORGOTTEN": "Task was forgotten",
@@ -13,5 +13,5 @@
   "TASK_UPDATE_MESSAGE": "Task updated",
   "TASK_UPDATE_ERROR_MESSAGE": "An error occurred while updating",
   "YES": "Yes",
-  "YOUR_TOKEN": "Your token is: {token}"
+  "YOUR_TOKEN": "Your token is:"
 }

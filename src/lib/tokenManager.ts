@@ -35,7 +35,7 @@ export default class TokenManager {
     async askToken() {
         const token = await vscode.window.showInputBox({
             ignoreFocusOut: true,
-            placeHolder: 'Paste your ClickUp Personal Access Token...',
+            placeHolder: 'Paste your ClickUp Personal API Token...',
         });
 
         if (!token) {

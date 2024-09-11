@@ -21,14 +21,14 @@
       },
       {
         "command": "clickup.setToken",
-        "title": "Set ClickUp Token",
+        "title": "Set Token",
         "category": "ClickUp"
       },
       {
-				"command": "clickup.getToken",
-				"title": "Get ClickUp Token",
-				"category": "ClickUp"
-			}
+        "command": "clickup.getToken",
+        "title": "Get Token",
+        "category": "ClickUp"
+      }
     ]
   },
   "scripts": {
@@ -51,6 +51,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@vscode/l10n": "^0.0.18"
+    "@vscode/l10n": "^0.0.18",
+    "clickup.js": "^3.0.4"
   }
 }
