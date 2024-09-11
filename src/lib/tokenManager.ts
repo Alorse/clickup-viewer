@@ -1,16 +1,15 @@
 import { LocalStorageService } from './localStorageService';
 import * as vscode from 'vscode';
-import * as constants from '../constants';
-import * as l10n from '@vscode/l10n';
 
 export default class TokenManager {
     storageManager?: LocalStorageService;
     token?: string = undefined;
     regex = /^[a-z]{2}[_]\d+[_].{32}/g;
+    l10n: any; 
 
-    constructor(storageManager: LocalStorageService) {
+    constructor(storageManager: LocalStorageService, l10n: any) {
         this.storageManager = storageManager;
-
+        this.l10n = l10n;
     }
     /**
      *
@@ -96,12 +95,12 @@ export default class TokenManager {
     async isValid() {
         // If token doesn't exists show error message
         if (this.token === undefined) {
-            vscode.window.showInformationMessage(constants.NO_CLICKUP_TOKEN_SET);
+            vscode.window.showInformationMessage(this.l10n.t('NO_CLICKUP_TOKEN_SET'));
             return false;
         }
 
         if (this.token.match(this.regex) === null) {
-            vscode.window.showInformationMessage(l10n.t('Invalid Token!'));
+            vscode.window.showInformationMessage(this.l10n.t('INVALID_TOKEN'));
             return false;
         }
 

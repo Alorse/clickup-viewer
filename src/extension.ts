@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import * as constants from './constants';
+import * as l10n from '@vscode/l10n';
+import * as translations from '../l10n/bundle.l10n.json';
 import { LocalStorageService } from './lib/localStorageService';
 import TokenManager from './lib/tokenManager';
 import { ApiWrapper } from './lib/apiWrapper';
@@ -13,8 +14,12 @@ let me: User;
 
 export async function activate(context: vscode.ExtensionContext) {
 
+	l10n.config({
+		contents: translations,
+	});
+	
 	storageManager = new LocalStorageService(context.workspaceState);
-	tokenManager = new TokenManager(storageManager);
+	tokenManager = new TokenManager(storageManager, l10n);
 	token = await tokenManager.init();
 
 	if (token) {
@@ -28,7 +33,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	vscode.commands.registerCommand('clickup.helloWorld', () => {
-		vscode.window.showInformationMessage(`${constants.SET_TOKEN} ${me.username}`);
+		vscode.window.showInformationMessage(`${l10n.t('SET_TOKEN')} ${me.username}`);
 	});
 
 	vscode.commands.registerCommand('clickup.setToken', async () => {
@@ -37,9 +42,9 @@ export async function activate(context: vscode.ExtensionContext) {
 			apiWrapper = new ApiWrapper(token);
 			try {
 				me = await apiWrapper.getUser();
-				vscode.window.showInformationMessage(`${constants.SET_TOKEN} ${me.username}`);
+				vscode.window.showInformationMessage(`${l10n.t('SET_TOKEN')} ${me.username}`);
 			} catch (error) {
-				vscode.window.showErrorMessage(constants.INVALID_TOKEN);
+				vscode.window.showErrorMessage(l10n.t("INVALID_TOKEN"));
 				console.log((<Error>error).message);
 			}
 		}
@@ -48,9 +53,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('clickup.getToken', async () => {
 		const token = await tokenManager.getToken();
 		if (!token) {
-			vscode.window.showInformationMessage(constants.TOKEN_NOT_FOUND);
+			vscode.window.showInformationMessage(l10n.t("TOKEN_NOT_FOUND"));
 		} else {
-			vscode.window.showInformationMessage(`${constants.YOUR_TOKEN} ${token}`);
+			vscode.window.showInformationMessage(l10n.t("YOUR_TOKEN {0}", token));
 		}
 	});
 }

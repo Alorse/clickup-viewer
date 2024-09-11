@@ -13,5 +13,5 @@
   "TASK_UPDATE_MESSAGE": "Task updated",
   "TASK_UPDATE_ERROR_MESSAGE": "An error occurred while updating",
   "YES": "Yes",
-  "YOUR_TOKEN": "Your token is:"
+  "YOUR_TOKEN {0}": "Your token is: {0}"
 }
