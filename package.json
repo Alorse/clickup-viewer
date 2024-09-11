@@ -29,7 +29,33 @@
         "title": "Get Token",
         "category": "ClickUp"
       }
-    ]
+    ],
+    "viewsContainers": {
+			"activitybar": [
+				{
+					"id": "clickup",
+					"title": "ClickUp",
+					"icon": "./resources/activitybar/logo_sidebar.svg"
+				}
+			]
+		},
+		"views": {
+			"clickup": [
+				{
+					"id": "tasksViewer",
+					"name": "%taskList.name%"
+				}
+			]
+		},
+    "menus": {
+      "view/title": [
+        {
+          "command": "clickup.helloWorld",
+          "when": "view == tasksViewer",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

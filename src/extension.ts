@@ -1,16 +1,20 @@
 import * as vscode from 'vscode';
 import * as l10n from '@vscode/l10n';
+import * as constants from './constants';
 import * as translations from '../l10n/bundle.l10n.json';
 import { LocalStorageService } from './lib/localStorageService';
+import { TaskListProvider } from './treeItems/taskListProvider';
 import TokenManager from './lib/tokenManager';
 import { ApiWrapper } from './lib/apiWrapper';
-import { User } from './types';
+import { User, Team } from './types';
 
 let storageManager: LocalStorageService;
 let tokenManager: TokenManager;
 let apiWrapper: ApiWrapper;
+let taskListProvider: TaskListProvider;
 let token: string | undefined;
 let me: User;
+let teams: Team[];
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -26,8 +30,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		//If token exists fetch data
 		apiWrapper = new ApiWrapper(token);
 		me = await apiWrapper.getUser();
-	}
 
+		teams = await apiWrapper.getTeams();
+		taskListProvider = new TaskListProvider(teams, apiWrapper);
+
+		startTreeViews();
+	}
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
@@ -57,6 +65,13 @@ export async function activate(context: vscode.ExtensionContext) {
 		} else {
 			vscode.window.showInformationMessage(l10n.t("YOUR_TOKEN {0}", token));
 		}
+	});
+}
+
+function startTreeViews() {
+	vscode.window.createTreeView('tasksViewer', {
+		treeDataProvider: taskListProvider,
+		showCollapseAll: true,
 	});
 }
 
