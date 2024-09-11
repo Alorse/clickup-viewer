@@ -1,26 +1,36 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as constants from './constants';
+import { LocalStorageService } from './lib/localStorageService';
+import TokenManager from './lib/tokenManager';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+let storageManager: LocalStorageService;
+let tokenManager: TokenManager;
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "clickup-in-my-vscode" is now active!');
+	storageManager = new LocalStorageService(context.workspaceState);
+	tokenManager = new TokenManager(storageManager);
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('clickup-in-my-vscode.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from ClickUp in my VSCode!');
+	vscode.commands.registerCommand('clickup.helloWorld', () => {
+		vscode.window.showInformationMessage(constants.NO_CLICKUP_TOKEN_SET);
 	});
 
-	context.subscriptions.push(disposable);
+	vscode.commands.registerCommand('clickup.setToken', async () => {
+		if (await tokenManager.askToken()) {
+			vscode.window.showInformationMessage(constants.SET_TOKEN);
+		}
+	});
+
+	vscode.commands.registerCommand('clickup.getToken', async () => {
+		const token = await tokenManager.getToken();
+		if (!token) {
+			vscode.window.showInformationMessage(constants.TOKEN_NOT_FOUND);
+		} else {
+			vscode.window.showInformationMessage(`Your token is: ${token}`);
+		}
+	});
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
