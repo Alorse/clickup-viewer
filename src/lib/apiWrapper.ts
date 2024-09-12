@@ -161,11 +161,13 @@ export class ApiWrapper {
      * Get a task
      *
      * @param {string} taskId
-     * @return {*}  {Promise<Task>}
+     * @return {Promise<Task>}
      * @memberof ApiWrapper
      */
     async getTask(taskId: string): Promise<Task> {
-        const { body } = await this.clickup.tasks.get(taskId);
+        const { body } = await this.clickup.tasks.get(taskId, {
+            include_markdown_description: true
+        });
         return body;
     }
 
@@ -173,12 +175,14 @@ export class ApiWrapper {
      *
      *
      * @param {string} listId
-     * @return {*} 
+     * @return {Task[]} 
      * @memberof ApiWrapper
      */
-    async getTasks(listId: string) {
-        const { body } = await this.clickup.lists.getTasks(listId);
-        const tasks: Array<Task> = body.tasks;
+    async getTasks(listId: string): Promise<Task[]> {
+        const { body } = await this.clickup.lists.getTasks(listId, {
+            include_markdown_description: true
+        });
+        const tasks: Task[] = body.tasks;
         return tasks;
     }
 
@@ -186,12 +190,12 @@ export class ApiWrapper {
      *
      *
      * @param {string} listId
-     * @return {*} 
+     * @return {Member[]} 
      * @memberof ApiWrapper
      */
-    async getMembers(listId: string) {
+    async getMembers(listId: string): Promise<Member[]> {
         const { body } = await this.clickup.lists.getMembers(listId);
-        const members: Array<Member> = body.members;
+        const members: Member[] = body.members;
         return members;
     }
 

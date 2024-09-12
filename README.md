@@ -1,6 +1,6 @@
-# clickup-in-my-vscode README
+# clickup-viewer README
 
-This is the README for your extension "clickup-in-my-vscode". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "clickup-viewer". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 

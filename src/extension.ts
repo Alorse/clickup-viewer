@@ -5,7 +5,8 @@ import { LocalStorageService } from './lib/localStorageService';
 import { TaskListProvider } from './treeItems/taskListProvider';
 import TokenManager from './lib/tokenManager';
 import { ApiWrapper } from './lib/apiWrapper';
-import { User, Team } from './types';
+import { User, Team, Task } from './types';
+import { OpenTaskPanel } from './panelItems/openTaskPanel';
 
 let storageManager: LocalStorageService;
 let tokenManager: TokenManager;
@@ -65,6 +66,11 @@ export async function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage(l10n.t("YOUR_TOKEN {0}", token));
 		}
 	});
+
+	vscode.commands.registerCommand('clickup.openTask', async (task: Task) => {
+		new OpenTaskPanel(task);
+	});
+	
 }
 
 function startTreeViews() {

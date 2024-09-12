@@ -37,6 +37,12 @@ export class TaskItem extends vscode.TreeItem {
           light: this.getIconPath(taskName, iconColor),
           dark: this.getIconPath(taskName, iconColor)
         };
+
+        this.command = {
+            command: 'clickup.openTask',
+            title: 'Open Task',
+            arguments: [task]
+        };
     }
 
     contextValue = 'taskItem';

@@ -1,6 +1,6 @@
 {
-  "name": "clickup-in-my-vscode",
-  "displayName": "ClickUp in my VSCode",
+  "name": "clickup-viewer",
+  "displayName": "ClickUp Viewer",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -28,25 +28,30 @@
         "command": "clickup.getToken",
         "title": "Get Token",
         "category": "ClickUp"
+      },
+      {
+        "command": "clickup.openTask",
+        "title": "Open Task",
+        "category": "ClickUp"
       }
     ],
     "viewsContainers": {
-			"activitybar": [
-				{
-					"id": "clickup",
-					"title": "ClickUp",
-					"icon": "./resources/activitybar/logo_sidebar.svg"
-				}
-			]
-		},
-		"views": {
-			"clickup": [
-				{
-					"id": "tasksViewer",
-					"name": "%taskList.name%"
-				}
-			]
-		},
+      "activitybar": [
+        {
+          "id": "clickup",
+          "title": "ClickUp",
+          "icon": "./resources/activitybar/logo_sidebar.svg"
+        }
+      ]
+    },
+    "views": {
+      "clickup": [
+        {
+          "id": "tasksViewer",
+          "name": "%taskList.name%"
+        }
+      ]
+    },
     "menus": {
       "view/title": [
         {
@@ -67,7 +72,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.7",
-    "@types/node": "20.x",
+    "@types/node": "^20.16.5",
     "@types/vscode": "^1.93.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
