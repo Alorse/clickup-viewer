@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as l10n from '@vscode/l10n';
-import * as constants from './constants';
 import * as translations from '../l10n/bundle.l10n.json';
 import { LocalStorageService } from './lib/localStorageService';
 import { TaskListProvider } from './treeItems/taskListProvider';
@@ -32,7 +31,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		me = await apiWrapper.getUser();
 
 		teams = await apiWrapper.getTeams();
-		taskListProvider = new TaskListProvider(teams, apiWrapper);
+		taskListProvider = new TaskListProvider(teams, apiWrapper, storageManager);
 
 		startTreeViews();
 	}
@@ -73,6 +72,10 @@ function startTreeViews() {
 		treeDataProvider: taskListProvider,
 		showCollapseAll: true,
 	});
+	setTimeout(() => {
+		console.log("Refreshing task list...");
+		taskListProvider.refresh();
+	}, 1000);
 }
 
 export function deactivate() {}

@@ -1,6 +1,6 @@
-import path = require('path');
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { Space } from '../../types';
+import { getIconPath } from '../../constants';
 
 export class SpaceItem extends TreeItem {
     constructor(
@@ -10,8 +10,8 @@ export class SpaceItem extends TreeItem {
         super(space.name, collapsibleState);
         this.id = space.id;
         this.iconPath = {
-            light: path.join(__filename, '..', '..', '..', '..', 'resources', 'spaceItem', 'layers.png'),
-            dark: path.join(__filename, '..', '..', '..', '..', 'resources', 'spaceItem', 'layers_white.png')
+            light: getIconPath(space.color, space.name),
+            dark: getIconPath(space.color, space.name)
         };
     }
     contextValue = 'spaceItem';

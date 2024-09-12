@@ -13,7 +13,7 @@ export class TaskItem extends vscode.TreeItem {
         super(task.name, collapsibleState);
 
         var dueDate = this.formatDueDate(task.due_date ? task.due_date : 'N/A');
-        var taskName = `${task.parent ?  '└' : ''} ${dueDate[1] ? `🟠` : ''} ${task.name}`;
+        var taskName = `${task.parent ?  '└ ' : ''}${dueDate[1] ? `🟠 ` : ''}${task.name}`;
         this.label = taskName;
 
         const tooltip = new vscode.MarkdownString('', true);
@@ -30,24 +30,26 @@ export class TaskItem extends vscode.TreeItem {
 <a href="${task.url}">Open in ClickUp</a>
 </p>`);
         this.tooltip = tooltip;
-            
-        var iconName = 'box-full-item.svg';
+
         const iconColor = task.status.color;
 
         this.iconPath = {
-          light: this.getIconPath(iconName, iconColor),
-          dark: this.getIconPath(iconName, iconColor)
+          light: this.getIconPath(taskName, iconColor),
+          dark: this.getIconPath(taskName, iconColor)
         };
     }
 
     contextValue = 'taskItem';
 
-    private getIconPath(iconName: string, iconColor: string): string {
-        const iconPath = path.join(__filename, '..', '..', '..', '..', 'resources', 'taskItem', iconName);
-        const svgContent = fs.readFileSync(iconPath, 'utf8');
-        const svgWithColor = svgContent.replace(/fill="#000000"/g, `fill="${iconColor}"`);
-        const tempIconPath = path.join(os.tmpdir(), `icon-${iconColor}.svg`);
-        fs.writeFileSync(tempIconPath, svgWithColor);
+    private getIconPath(taskName: string, iconColor: string): string {
+        const svgIcon = `
+            <svg fill="${iconColor}" width="32px" height="32px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" >
+                <path d="M96 448Q82 448 73 439 64 430 64 416L64 96Q64 82 73 73 82 64 96 64L416 64Q430 64 439 73 448 82 448 96L448 416Q448 430 439 439 430 448 416 448L96 448Z" />
+            </svg>
+        `;
+        const nameSlug = taskName.toLowerCase().replace(/[ \/]/g, '-');
+        const tempIconPath = path.join(os.tmpdir(), `folder-${nameSlug}.svg`);
+        fs.writeFileSync(tempIconPath, svgIcon);
         return tempIconPath;
     }
 

@@ -113,6 +113,16 @@ export type Folder = Project;
 
 export type Space = {
     id: string,
+    name: string,
+    private: boolean,
+    color: string | null,
+    avatar: string | null,
+    admin_can_manage: boolean,
+    archived: boolean,
+    members: Member[],
+    statuess: Status[],
+    multiple_assignees: boolean,
+    features: any
 };
 
 export type Team = {
