@@ -18,7 +18,7 @@ export type Task = {
     checklists: Checklist[],
     tags: Tag[],
     parent: string | null,
-    priority: string,
+    priority: Priority | null,
     due_date: string | null,
     start_date: string,
     points: number | null,
@@ -82,6 +82,13 @@ export type Tag = {
     tag_bg: string,
     creator: number
 };
+
+export type Priority = {
+    id: string,
+    priority: string,
+    color: string,
+    orderindex: number
+}
 
 export type CustomField = {
     id: string,

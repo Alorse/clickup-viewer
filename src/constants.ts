@@ -25,3 +25,15 @@ export const getIconPath = (iconColor: string | null, itemName: string): string 
     return tempIconPath;
 };
 
+export const formatDueDate =(dueDate: string | null): [string, string | boolean] => {
+    if (dueDate === null) {
+        return ['N/A', false];
+    }
+    const date = new Date(Number.parseInt(dueDate));
+    const today = new Date();
+    const isToday = date.toDateString() === today.toDateString();
+    const isOverdue = date.getTime() < today.getTime();
+    const dueDateString = date.toLocaleDateString();
+    return [dueDateString, isToday ? 'Today' : isOverdue ? 'Overdue' : false];
+};
+

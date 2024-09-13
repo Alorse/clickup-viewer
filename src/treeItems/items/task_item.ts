@@ -1,34 +1,39 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import * as types from '../../types';
+import { Task} from '../../types';
+import { formatDueDate} from '../../constants';
 import * as fs from 'fs';
 import * as os from 'os';
 
 export class TaskItem extends vscode.TreeItem {
 
     constructor(
-        public task: types.Task,
+        public task: Task,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None,
     ) {
         super(task.name, collapsibleState);
 
-        var dueDate = this.formatDueDate(task.due_date ? task.due_date : 'N/A');
+        var dueDate = formatDueDate(task.due_date);
         var taskName = `${task.parent ?  '└ ' : ''}${dueDate[1] ? `🟠 ` : ''}${task.name}`;
         this.label = taskName;
 
-        const tooltip = new vscode.MarkdownString('', true);
+        let tooltipContent = ``;
+        tooltipContent += `<h3>${task.name}</h3>`;
+        tooltipContent += `<p><strong>ID:</strong> ${task.custom_id ? task.custom_id : task.id}<br>`;
+        tooltipContent += `<strong>Status:</strong> ${task.status.status.toUpperCase()}<br>`;
+        let dueDateStatus = '';
+        if (dueDate[1] === 'Today') {
+            dueDateStatus = `- <span style="color:#FFA500;">Today</span>`;
+        } else if (dueDate[1] === 'Overdue') {
+            dueDateStatus = `- <span style="color:#FF0000;">Overdue</span>`;
+        }
+        tooltipContent += `<strong>Due Date:</strong> ${task.due_date ? dueDate[0] : 'N/A'} ${dueDateStatus}<br>`;
+        tooltipContent += `<strong>Space:</strong> ${task.folder.name} / ${task.list.name}<br></p>`;
+        tooltipContent += `<p><a href="${task.url}">Open in ClickUp</a></p>`;
+
+        const tooltip = new vscode.MarkdownString(tooltipContent, true);
         tooltip.supportHtml = true;
         tooltip.isTrusted = true;
-        tooltip.appendMarkdown(`<h3>${task.name}</h3>
-<p>
-<strong>ID:</strong> ${task.custom_id}<br>
-<strong>Status:</strong> ${task.status.status.toUpperCase()}<br>
-<strong>Due Date:</strong> ${dueDate[0]} - ${dueDate[1] ? (dueDate[1] === 'Today' ? `<span style="color:#FFA500;">Today</span>` : dueDate[1] === 'Overdue' ? `<span style="color:#FF0000;">Overdue</span>` : dueDate[1]) : ''}<br>
-<strong>Space:</strong> ${task.folder.name} / ${task.list.name}<br>
-</p>
-<p>
-<a href="${task.url}">Open in ClickUp</a>
-</p>`);
         this.tooltip = tooltip;
 
         const iconColor = task.status.color;
@@ -59,15 +64,5 @@ export class TaskItem extends vscode.TreeItem {
         return tempIconPath;
     }
 
-    private formatDueDate(dueDate: string): [string, string | boolean] {
-        if (dueDate === null) {
-            return ['N/A', false];
-        }
-        const date = new Date(Number.parseInt(dueDate));
-        const today = new Date();
-        const isToday = date.toDateString() === today.toDateString();
-        const isOverdue = date.getTime() < today.getTime();
-        const dueDateString = date.toLocaleDateString();
-        return [dueDateString, isToday ? 'Today' : isOverdue ? 'Overdue' : false];
-    }
+    
 }
