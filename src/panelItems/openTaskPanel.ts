@@ -11,7 +11,7 @@ export class OpenTaskPanel {
     tempFilePath: string;
 
     constructor(task: Task) {
-        this.tempFilePath = path.join(os.tmpdir(), task.name.replace(/\//g, '-'));
+        this.tempFilePath = path.join(os.tmpdir(), task.id);
         const taskContent = this.createMarkdownContent(task);
         console.log(task);
         fs.writeFile(this.tempFilePath, taskContent, err => {
@@ -98,7 +98,9 @@ export class OpenTaskPanel {
      */
     private showUserInfo(title: string, creator: Creator): string {
         let creatorContent = `### ${title}\n`;
-        creatorContent += `<img src="${creator.profilePicture}" width="100" />\n\n`;
+        if (creator.profilePicture) {
+            creatorContent += `<img src="${creator.profilePicture}" width="100" />\n\n`;
+        }
         creatorContent += `- **Username**: ${creator.username}\n`;
         creatorContent += `- **Email**: ${creator.email}\n`;
         return creatorContent;
