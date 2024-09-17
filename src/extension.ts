@@ -3,6 +3,7 @@ import * as l10n from '@vscode/l10n';
 import * as translations from '../l10n/bundle.l10n.json';
 import { LocalStorageService } from './lib/localStorageService';
 import { TaskListProvider } from './treeItems/taskListProvider';
+import { MyTaskListProvider } from './treeItems/myTaskListProvider';
 import TokenManager from './lib/tokenManager';
 import { ApiWrapper } from './lib/apiWrapper';
 import { User, Team, Task } from './types';
@@ -12,6 +13,7 @@ let storageManager: LocalStorageService;
 let tokenManager: TokenManager;
 let apiWrapper: ApiWrapper;
 let taskListProvider: TaskListProvider;
+let myTaskListProvider: MyTaskListProvider;
 let token: string | undefined;
 let me: User;
 let teams: Team[];
@@ -21,7 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	l10n.config({
 		contents: translations,
 	});
-	
+
 	storageManager = new LocalStorageService(context.workspaceState);
 	tokenManager = new TokenManager(storageManager, l10n);
 	token = await tokenManager.init();
@@ -33,16 +35,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 		teams = await apiWrapper.getTeams();
 		taskListProvider = new TaskListProvider(teams, apiWrapper, storageManager);
+		myTaskListProvider = new MyTaskListProvider(apiWrapper, teams, me.id);
 
 		startTreeViews();
 	}
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	vscode.commands.registerCommand('clickup.helloWorld', () => {
-		vscode.window.showInformationMessage(`${l10n.t('SET_TOKEN')} ${me.username}`);
-	});
 
 	vscode.commands.registerCommand('clickup.setToken', async () => {
 		if (await tokenManager.askToken()) {
@@ -70,13 +66,30 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('clickup.openTask', async (task: Task) => {
 		new OpenTaskPanel(task);
 	});
-	
+
+	vscode.commands.registerCommand('clickup.refreshSpaces', () => {
+		taskListProvider.refresh();
+	});
+
+	vscode.commands.registerCommand('clickup.refreshMyTasks', () => {
+		myTaskListProvider.refresh();
+	});
+
+	vscode.commands.registerCommand('clickup.openInWeb', (taskItem) => {
+		taskItem.task.url && vscode.env.openExternal(vscode.Uri.parse(taskItem.task.url));
+	});
+
 }
 
 function startTreeViews() {
-	vscode.window.createTreeView('tasksViewer', {
+	vscode.window.createTreeView('spacesViewer', {
 		treeDataProvider: taskListProvider,
 		showCollapseAll: true,
+	});
+
+	vscode.window.createTreeView('myTasksViewer', {
+		treeDataProvider: myTaskListProvider,
+		showCollapseAll: true
 	});
 	setTimeout(() => {
 		console.log("Refreshing task list...");
@@ -84,4 +97,4 @@ function startTreeViews() {
 	}, 1000);
 }
 
-export function deactivate() {}
+export function deactivate() { }

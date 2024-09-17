@@ -98,6 +98,7 @@ export type CustomField = {
     date_created: string,
     hide_from_guests: boolean
     required: boolean
+    value: any
 };
 export type TypeConfig = undefined;
 

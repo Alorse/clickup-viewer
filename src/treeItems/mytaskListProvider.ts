@@ -1,15 +1,15 @@
 import * as vscode from 'vscode';
-import * as types from '../types';
+import { Team, Task} from '../types';
 import { TaskItem } from './items/task_item';
 import { ApiWrapper } from '../lib/apiWrapper';
 
 export class MyTaskListProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
     apiwrapper: ApiWrapper;
-    teams: types.Team[];
-    userId: string;
+    teams: Team[];
+    userId: number;
 
-    constructor(apiWrapper: ApiWrapper, teams: Array<types.Team>, userId: string) {
+    constructor(apiWrapper: ApiWrapper, teams: Array<Team>, userId: number) {
         this.apiwrapper = apiWrapper;
         this.userId = userId;
         this.teams = teams;
@@ -19,10 +19,10 @@ export class MyTaskListProvider implements vscode.TreeDataProvider<vscode.TreeIt
         return element;
     }
 
-    async getChildren(element?: (types.Space)): Promise<(vscode.TreeItem)[]> {
+    async getChildren(element?: (Task)): Promise<(vscode.TreeItem)[]> {
         const resolve: Array<TaskItem> = [];
         for (const team of this.teams) {
-            const tasks: Array<types.Task> = await this.apiwrapper.getMyTask(team.id, this.userId, true);
+            const tasks: Array<Task> = await this.apiwrapper.getMyTask(team.id, this.userId.toString(), true);
             for (const task of tasks) {
                 resolve.push(new TaskItem(task));
             }

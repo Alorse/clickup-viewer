@@ -2,8 +2,10 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { Task, Checklist, Priority, Status, Tag } from '../types';
+import { Task, Checklist, Priority, Status, Tag, Creator, CustomField } from '../types';
 import { formatDueDate } from '../constants';
+
+export const USER_CUSTOM_FIELD_NAME = "Stakeholder";
 
 export class OpenTaskPanel {
     tempFilePath: string;
@@ -29,16 +31,22 @@ export class OpenTaskPanel {
         } else if (dueDate[1] === 'Overdue') {
             dueDateStatus = `- <span style="color:#FF0000;">Overdue</span>`;
         }
-        let taskContent = `# ${task.name}\n\n`;
+        let taskContent = `# [[${task.custom_id ? task.custom_id : task.id}]](${task.url}) ${task.name}\n\n`;
         taskContent += `**Due date**: ${task.due_date ? dueDate[0] : 'Not specified'} ${dueDateStatus}\n\n`;
         taskContent += this.showPriority(task.priority);
         taskContent += this.showStatus(task.status);
         taskContent += this.showTags(task.tags);
         taskContent += `## Description\n${task.markdown_description}\n\n`;
-        taskContent += `---\n\n`;
         taskContent += this.showChecklists(task.checklists);
-        taskContent += this.showCreatorInfo(task.creator);
-        taskContent += `\n\n[View Task Online](${task.url})`;
+        taskContent += `---\n\n`;
+        const customUser = this.getCustomUser(task, USER_CUSTOM_FIELD_NAME);
+        if (customUser) {
+            const customUserObject = customUser as { name: string; creator: Creator; };
+            taskContent += this.showUserInfo(customUserObject.name, customUserObject.creator);
+        } else {
+            taskContent += this.showUserInfo("Created by", task.creator);
+        }
+        taskContent += `\n\n\n[Open in ClickUp](${task.url})`;
 
         return taskContent;
     }
@@ -81,12 +89,36 @@ export class OpenTaskPanel {
         return checklistContent;
     }
 
-    private showCreatorInfo(creator: { username: string; email: string; profilePicture: string }): string {
-        let creatorContent = `### Creator Information\n`;
+    /**
+     * Returns a string containing a markdown formatted representation of a user's details.
+     * The returned string will include the user's profile picture, username and email.
+     * @param title the title to display above the user's information
+     * @param creator the user to display information for
+     * @returns a string containing a markdown formatted representation of a user's details
+     */
+    private showUserInfo(title: string, creator: Creator): string {
+        let creatorContent = `### ${title}\n`;
         creatorContent += `<img src="${creator.profilePicture}" width="100" />\n\n`;
         creatorContent += `- **Username**: ${creator.username}\n`;
         creatorContent += `- **Email**: ${creator.email}\n`;
         return creatorContent;
+    }
+
+    /**
+     * Returns the custom field value and its associated creator for a given custom field name if it exists, otherwise false.
+     * @param task the task to search custom fields in
+     * @param customFieldName the name of the custom field to search
+     * @returns an object with name and creator properties or false
+     */
+    private getCustomUser(task: Task, customFieldName: string): { name: string, creator: Creator } | boolean {
+        const customField: CustomField | undefined = task.custom_fields.find(cf => cf.name === customFieldName);
+        if (customField && customField.value && customField.value.length > 0) {
+            return {
+                name: customField.name,
+                creator: customField.value[0]
+            };
+        }
+        return false;
     }
 
     /**
@@ -101,4 +133,5 @@ export class OpenTaskPanel {
         await vscode.commands.executeCommand('markdown.showPreview', doc.uri);
     }
 }
+
 

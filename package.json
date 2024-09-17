@@ -1,7 +1,9 @@
 {
   "name": "clickup-viewer",
-  "displayName": "ClickUp Viewer",
-  "description": "",
+  "displayName": "%displayName%",
+  "publisher": "Alorse",
+  "description": "%description%",
+  "repository": "https://github.com/Alorse/clickup-viewer",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.93.0"
@@ -15,31 +17,39 @@
   "contributes": {
     "commands": [
       {
-        "command": "clickup.helloWorld",
-        "title": "Hello World",
-        "category": "ClickUp"
-      },
-      {
         "command": "clickup.setToken",
-        "title": "Set Token",
-        "category": "ClickUp"
+        "title": "%setToken.title%",
+        "category": "%displayName%"
       },
       {
         "command": "clickup.getToken",
-        "title": "Get Token",
-        "category": "ClickUp"
+        "title": "%getToken.title%",
+        "category": "%displayName%"
       },
       {
-        "command": "clickup.openTask",
-        "title": "Open Task",
-        "category": "ClickUp"
+        "command": "clickup.refreshSpaces",
+        "title": "%refreshSpaces.title%",
+        "category": "%displayName%",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "clickup.refreshMyTasks",
+        "title": "%refreshMyTask.title%",
+        "category": "ClickUp",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "clickup.openInWeb",
+        "title": "%openInWeb.title%",
+        "category": "%displayName%",
+        "icon": "$(globe)"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "clickup",
-          "title": "ClickUp",
+          "title": "%displayName%",
           "icon": "./resources/activitybar/logo_sidebar.svg"
         }
       ]
@@ -47,17 +57,33 @@
     "views": {
       "clickup": [
         {
-          "id": "tasksViewer",
-          "name": "%taskList.name%"
+          "id": "spacesViewer",
+          "name": "%workspaces.name%"
+        },
+        {
+          "id": "myTasksViewer",
+          "name": "%myTasks.name%"
         }
       ]
     },
     "menus": {
       "view/title": [
         {
-          "command": "clickup.helloWorld",
-          "when": "view == tasksViewer",
+          "command": "clickup.refreshSpaces",
+          "when": "view == spacesViewer",
           "group": "navigation"
+        },
+        {
+          "command": "clickup.refreshMyTasks",
+          "when": "view == myTasksViewer",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "clickup.openInWeb",
+          "when": "viewItem == taskItem",
+          "group": "inline@1"
         }
       ]
     }

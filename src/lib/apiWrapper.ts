@@ -401,7 +401,8 @@ export class ApiWrapper {
             "space_ids[]": [
                 90020068902 // Tickets
             ],
-            "subtasks": subtasks
+            "subtasks": subtasks,
+            "include_markdown_description": true
         };
 
         const { body } = await this.clickup.teams.getFilteredTasks(teamId, options);
