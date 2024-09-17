@@ -35,7 +35,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 		teams = await apiWrapper.getTeams();
 		taskListProvider = new TaskListProvider(teams, apiWrapper, storageManager);
-		myTaskListProvider = new MyTaskListProvider(apiWrapper, teams, me.id);
+		myTaskListProvider = new MyTaskListProvider(apiWrapper, teams, me.id, storageManager);
 
 		startTreeViews();
 	}
