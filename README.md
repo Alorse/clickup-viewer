@@ -1,71 +1,40 @@
-# clickup-viewer README
+# ClickUp Viewer
 
-This is the README for your extension "clickup-viewer". After writing up a brief description, we recommend including the following sections.
+A VS Code extension for displaying projects and tasks, with a task list view, task preview and time tracker.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+* Display your ClickUp projects and tasks in a tree view
+* Preview task details, including description, status, and assignees
+* Track time spent on tasks with a built-in time tracker
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+* ClickUp Personal API Key: to use this extension, you need to create a Personal API Key in ClickUp. You can find detailed instructions in [this article from ClickUp's documentation](https://help.clickup.com/hc/en-us/articles/6303426241687-Use-the-ClickUp-API#personal-api-key).
 
-## Extension Settings
+## Commands
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+The extension provides the following commands:
 
-For example:
+* `ClickUp Viewer: Set token`
+* `ClickUp Viewer: Show token`
+* `ClickUp Viewer: Refresh My Tasks`: Refreshes my task list in the task panel.
+* `ClickUp Viewer: Refresh Workspaces`: Refreshes workspaces in the task panel.
 
-This extension contributes the following settings:
+## Getting Started
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+1. Install the extension from the VS Code marketplace.
+2. Configure your ClickUp Personal API Key in the extension settings.
+3. Start exploring your projects and tasks in the ClickUp task panel.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+* [Insert any known issues or limitations]
 
-## Release Notes
+## Contributing
 
-Users appreciate release notes as you update your extension.
+* [Insert information on how to contribute to the project]
 
-### 1.0.0
+## License
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+* [Insert license information]
