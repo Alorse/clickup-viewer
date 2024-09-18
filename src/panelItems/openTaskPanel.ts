@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { Task, Checklist, Priority, Status, Tag, Creator, CustomField } from '../types';
-import { formatDueDate, TODAY, OVERDUE } from '../constants';
+import { formatDueDate, TODAY, OVERDUE, CLICKUP_URL } from '../constants';
 
 export const USER_CUSTOM_FIELD_NAME = "Stakeholder";
 
@@ -23,19 +23,13 @@ export class OpenTaskPanel {
         this.openTaskMarkdownFile();
     }
 
-    private createMarkdownContent(task: Task): string {
-        const dueDate = formatDueDate(task.due_date);
-        let dueDateStatus = '';
-        if (dueDate[1] === TODAY) {
-            dueDateStatus = `- <span style="color:#FFA500;">Today</span>`;
-        } else if (dueDate[1] === OVERDUE) {
-            dueDateStatus = `- <span style="color:#FF0000;">Overdue</span>`;
-        }
+    private createMarkdownContent(task: Task): string {        
         let taskContent = `# [[${task.custom_id ? task.custom_id : task.id}]](${task.url}) ${task.name}\n\n`;
-        taskContent += `**Due date**: ${task.due_date ? dueDate[0] : 'Not specified'} ${dueDateStatus}\n\n`;
-        taskContent += this.showPriority(task.priority);
+        taskContent += this.showParent(task.parent);
         taskContent += this.showStatus(task.status);
+        taskContent += this.showDates(task.due_date);
         taskContent += this.showTags(task.tags);
+        taskContent += this.showPriority(task.priority);
         taskContent += `## Description\n${task.markdown_description}\n\n`;
         taskContent += this.showChecklists(task.checklists);
         taskContent += `---\n\n`;
@@ -49,6 +43,24 @@ export class OpenTaskPanel {
         taskContent += `\n\n\n[Open in ClickUp](${task.url})`;
 
         return taskContent;
+    }
+
+    private showParent(parent: string | null): string {
+        if (!parent) {
+            return '';
+        }
+        return `**Parent**: [[${parent}]](${CLICKUP_URL}/t/${parent})\n\n`;
+    }
+
+    private showDates(date: string | null): string {
+        const dueDate = formatDueDate(date);
+        let dueDateStatus = '';
+        if (dueDate[1] === TODAY) {
+            dueDateStatus = `- <span style="color:var(--vscode-clickup-taskItemLabelExpiresToday)">Today</span>`;
+        } else if (dueDate[1] === OVERDUE) {
+            dueDateStatus = `- <span style="color:var(--vscode-clickup-taskItemLabelOverdue)">Overdue</span>`;
+        }
+        return `- **Due date**: ${dueDate ? dueDate[0] : 'Not specified'} ${dueDateStatus}\n\n`;
     }
 
     private showPriority(priority: Priority | null): string {

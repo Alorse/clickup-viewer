@@ -13,7 +13,6 @@ export class TaskItemDecorationProvider implements vscode.FileDecorationProvider
         if (uri.scheme !== 'clickup-viewer') {
             return null;
         }
-        console.log(uri);
 
         const query = new URLSearchParams(uri.query);
         const color = query.get('color');

@@ -9,6 +9,8 @@ export const DEFAULT_TASK_DETAILS = [
 export const OVERDUE = 'overdue';
 export const TODAY = 'today';
 
+export const CLICKUP_URL = 'https://app.clickup.com/';
+
 export const getRandomHexColor = (): string => {
     let n = (Math.random() * 0xfffff * 1000000).toString(16);
     return "#" + n.slice(0, 6);
