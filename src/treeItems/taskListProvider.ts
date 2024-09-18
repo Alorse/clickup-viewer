@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import { Team, Space, Folder, List, Task} from '../types';
-import { TaskItem } from './items/task_item';
-import { ListItem } from './items/list_item';
-import { SpaceItem } from './items/space_item';
-import { TeamItem } from './items/team_item';
-import { FolderItem } from './items/folder_item';
+import { TaskItem } from './items/TaskItem';
+import { ListItem } from './items/ListItem';
+import { SpaceItem } from './items/SpaceItem';
+import { TeamItem } from './items/TeamItem';
+import { FolderItem } from './items/FolderItem';
 import { ApiWrapper } from '../lib/apiWrapper';
 import { LocalStorageService } from '../lib/localStorageService';
 

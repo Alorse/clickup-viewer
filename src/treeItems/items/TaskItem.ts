@@ -4,8 +4,8 @@ import { Task } from '../../types';
 import { formatDueDate} from '../../constants';
 import * as fs from 'fs';
 import * as os from 'os';
-import { TaskDecorationProvider } from '../providers/TaskDecorationProvider';
 
+const taskColorMap = new Map<string, string>();
 export class TaskItem extends vscode.TreeItem {
 
     constructor(
@@ -16,15 +16,7 @@ export class TaskItem extends vscode.TreeItem {
 
         var dueDate = formatDueDate(task.due_date);
         var taskName = `${task.parent ?  '└ ' : ''}${dueDate[1] ? `🟠 ` : ''}${task.name}`;
-
-        const taskDecorationProvider = new TaskDecorationProvider();
-        vscode.window.registerFileDecorationProvider(taskDecorationProvider);
-
-        taskDecorationProvider.provideFileDecoration(vscode.Uri.file(task.id), {
-            badge: "⇐",
-            color: new vscode.ThemeColor('#FFA500'),
-          });
-
+        this.label = taskName;
 
         let tooltipContent = ``;
         tooltipContent += `<h3>${task.name}</h3>`;
@@ -46,6 +38,7 @@ export class TaskItem extends vscode.TreeItem {
         this.tooltip = tooltip;
 
         const iconColor = task.status.color;
+        taskColorMap.set(task.id, iconColor); 
 
         this.iconPath = {
           light: this.getIconPath(task.id, iconColor),
@@ -71,6 +64,4 @@ export class TaskItem extends vscode.TreeItem {
         fs.writeFileSync(tempIconPath, svgIcon);
         return tempIconPath;
     }
-
-    
 }

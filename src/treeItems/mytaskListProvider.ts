@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { Team, Task } from '../types';
-import { TaskItem } from './items/task_item';
-import { TeamItem } from './items/team_item';
+import { TaskItem } from './items/TaskItem';
+import { TeamItem } from './items/TeamItem';
 import { ApiWrapper } from '../lib/apiWrapper';
 import { LocalStorageService } from '../lib/localStorageService';
 
