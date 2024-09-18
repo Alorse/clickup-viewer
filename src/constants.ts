@@ -6,6 +6,9 @@ export const DEFAULT_TASK_DETAILS = [
     'id', 'name', 'description', 'url', 'status', 'priority', 'creator', 'tags', 'assignees'
 ];
 
+export const OVERDUE = 'overdue';
+export const TODAY = 'today';
+
 export const getRandomHexColor = (): string => {
     let n = (Math.random() * 0xfffff * 1000000).toString(16);
     return "#" + n.slice(0, 6);
@@ -34,6 +37,6 @@ export const formatDueDate =(dueDate: string | null): [string, string | boolean]
     const isToday = date.toDateString() === today.toDateString();
     const isOverdue = date.getTime() < today.getTime();
     const dueDateString = date.toLocaleDateString();
-    return [dueDateString, isToday ? 'Today' : isOverdue ? 'Overdue' : false];
+    return [dueDateString, isToday ? TODAY : isOverdue ? OVERDUE : false];
 };
 

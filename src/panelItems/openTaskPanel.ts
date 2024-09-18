@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { Task, Checklist, Priority, Status, Tag, Creator, CustomField } from '../types';
-import { formatDueDate } from '../constants';
+import { formatDueDate, TODAY, OVERDUE } from '../constants';
 
 export const USER_CUSTOM_FIELD_NAME = "Stakeholder";
 
@@ -26,9 +26,9 @@ export class OpenTaskPanel {
     private createMarkdownContent(task: Task): string {
         const dueDate = formatDueDate(task.due_date);
         let dueDateStatus = '';
-        if (dueDate[1] === 'Today') {
+        if (dueDate[1] === TODAY) {
             dueDateStatus = `- <span style="color:#FFA500;">Today</span>`;
-        } else if (dueDate[1] === 'Overdue') {
+        } else if (dueDate[1] === OVERDUE) {
             dueDateStatus = `- <span style="color:#FF0000;">Overdue</span>`;
         }
         let taskContent = `# [[${task.custom_id ? task.custom_id : task.id}]](${task.url}) ${task.name}\n\n`;

@@ -1,11 +1,10 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import { Task } from '../../types';
-import { formatDueDate} from '../../constants';
+import { formatDueDate, OVERDUE, TODAY } from '../../constants';
 import * as fs from 'fs';
 import * as os from 'os';
 
-const taskColorMap = new Map<string, string>();
 export class TaskItem extends vscode.TreeItem {
 
     constructor(
@@ -15,7 +14,7 @@ export class TaskItem extends vscode.TreeItem {
         super(task.name, collapsibleState);
 
         var dueDate = formatDueDate(task.due_date);
-        var taskName = `${task.parent ?  '└ ' : ''}${dueDate[1] ? `🟠 ` : ''}${task.name}`;
+        var taskName = `${task.parent ? '└ ' : ''}${task.name}`;
         this.label = taskName;
 
         let tooltipContent = ``;
@@ -23,9 +22,9 @@ export class TaskItem extends vscode.TreeItem {
         tooltipContent += `<p><strong>ID:</strong> ${task.custom_id ? task.custom_id : task.id}<br>`;
         tooltipContent += `<strong>Status:</strong> ${task.status.status.toUpperCase()}<br>`;
         let dueDateStatus = '';
-        if (dueDate[1] === 'Today') {
+        if (dueDate[1] === TODAY) {
             dueDateStatus = `- <span style="color:#FFA500;">Today</span>`;
-        } else if (dueDate[1] === 'Overdue') {
+        } else if (dueDate[1] === OVERDUE) {
             dueDateStatus = `- <span style="color:#FF0000;">Overdue</span>`;
         }
         tooltipContent += `<strong>Due Date:</strong> ${task.due_date ? dueDate[0] : 'N/A'} ${dueDateStatus}<br>`;
@@ -38,12 +37,13 @@ export class TaskItem extends vscode.TreeItem {
         this.tooltip = tooltip;
 
         const iconColor = task.status.color;
-        taskColorMap.set(task.id, iconColor); 
 
         this.iconPath = {
-          light: this.getIconPath(task.id, iconColor),
-          dark: this.getIconPath(task.id, iconColor)
+            light: this.getIconPath(task.id, iconColor),
+            dark: this.getIconPath(task.id, iconColor)
         };
+
+        this.resourceUri = this.createViewDecorationUri(task.id, dueDate[1]);
 
         this.command = {
             command: 'clickup.openTask',
@@ -63,5 +63,30 @@ export class TaskItem extends vscode.TreeItem {
         const tempIconPath = path.join(os.tmpdir(), `task-${taskId}.svg`);
         fs.writeFileSync(tempIconPath, svgIcon);
         return tempIconPath;
+    }
+
+    /**
+     * Creates a URI with a special scheme that can be used to trigger a special
+     * decoration in the tree view.
+     *
+     * @param taskId the ID of the task
+     * @param overdue whether the task is overdue, is today, or is neither
+     * @return a URI that can be used to trigger a decoration
+     */
+    private createViewDecorationUri(taskId: string, overdue?: string | boolean): vscode.Uri {
+        const scheme = 'clickup-viewer';
+        const uriString = `${scheme}://${taskId}`;
+        const uriQuery: { [key: string]: string } = {};
+        if (overdue) {
+            uriQuery.color = overdue === OVERDUE ? 'clickup.taskItemLabelOverdue' : 'clickup.taskItemLabelExpiresToday';
+        }
+        const uriObject = {
+            scheme: scheme,
+            authority: '',
+            path: taskId,
+            query: new URLSearchParams(uriQuery).toString(),
+            fragment: ''
+        };
+        return vscode.Uri.parse(`${uriString}?${uriObject.query}`);
     }
 }

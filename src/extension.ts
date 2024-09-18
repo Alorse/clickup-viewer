@@ -4,6 +4,7 @@ import * as translations from '../l10n/bundle.l10n.json';
 import { LocalStorageService } from './lib/localStorageService';
 import { TaskListProvider } from './treeItems/taskListProvider';
 import { MyTaskListProvider } from './treeItems/myTaskListProvider';
+import { TaskItemDecorationProvider } from './providers/TaskItemDecorationProvider';
 import TokenManager from './lib/tokenManager';
 import { ApiWrapper } from './lib/apiWrapper';
 import { User, Team, Task } from './types';
@@ -37,6 +38,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		taskListProvider = new TaskListProvider(teams, apiWrapper, storageManager);
 		myTaskListProvider = new MyTaskListProvider(apiWrapper, teams, me.id, storageManager);
 
+		registerDecorators(context);
 		startTreeViews();
 	}
 
@@ -95,6 +97,11 @@ function startTreeViews() {
 		console.log("Refreshing task list...");
 		taskListProvider.refresh();
 	}, 1000);
+}
+
+function registerDecorators(context: vscode.ExtensionContext) {
+	const taskFileDecorationProvider = new TaskItemDecorationProvider();
+	context.subscriptions.push(taskFileDecorationProvider);
 }
 
 export function deactivate() { }

@@ -86,7 +86,25 @@
           "group": "inline@1"
         }
       ]
-    }
+    },
+    "colors": [
+      {
+        "id": "clickup.taskItemLabelOverdue",
+        "description": "Color used for the task item text",
+        "defaults": {
+          "light": "#e38388",
+          "dark": "#e38388"
+        }
+      },
+      {
+        "id": "clickup.taskItemLabelExpiresToday",
+        "description": "Color used for the task item text",
+        "defaults": {
+          "light": "#fbcb5c",
+          "dark": "#fbcb5c"
+        }
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
