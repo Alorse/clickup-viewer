@@ -6,7 +6,7 @@ import {
 	ThemeColor
 } from "vscode";
 import { ApiWrapper } from "./apiWrapper";
-import { CreateTime, Task, Interval } from "../types";
+import { CreateTime, Task, Interval, Tracking } from "../types";
 
 const DEFAULT_TIME = "00:00:00";
 const FORMAT_TIME = "HH:mm:ss";
@@ -207,39 +207,48 @@ export function getFormattedDurationBetween(from: number, to: number = Date.now(
 }
 
 export function formatDuration(inputDuration: number) {
-	const duration = dayjs.duration(inputDuration);
-
-	if (!dayjs.isDuration(duration)) {
-		return DEFAULT_TIME;
-	}
-	return duration.format(FORMAT_TIME);
-}
-
-export function formatInterval(interval: Interval) {
-    const startDate = dayjs(parseInt(interval.start));
-    const endDate = dayjs(parseInt(interval.end));
-    const totalDuration = dayjs.duration(endDate.diff(startDate));
+    const totalDuration = dayjs.duration(inputDuration);
 
     const days = Math.floor(totalDuration.asDays());
     const hours = totalDuration.hours();
     const minutes = totalDuration.minutes();
     const seconds = totalDuration.seconds();
 
-    // Más de 24 horas
     if (days >= 1) {
-        return `${days}d ${hours}h ${minutes}m on ${startDate.format('MMM D')}`;
+        return `${days}d ${hours}h ${minutes}m`;
     }
 
-    // Más de 1 hora
     if (hours >= 1) {
-        return `${hours}h ${minutes}m on ${startDate.format('MMM D')}`;
+        return `${hours}h ${minutes}m`;
     }
 
-    // Más de 1 minuto
     if (minutes >= 1) {
-        return `${minutes}m on ${startDate.format('MMM D')}`;
+        return `${minutes}m`;
     }
 
-    // Menos de 60 segundos
-    return `${seconds}s on ${startDate.format('MMM D')}`;
+    return `${seconds}s`;
+}
+
+export function formatTrackingDuration(trackingList: Tracking[]): string {
+    // Sumar los tiempos de todos los intervalos de todos los Tracking
+    const totalDuration = trackingList.reduce((totalSum, tracking) => {
+        // Sumar los tiempos de los intervalos de cada Tracking
+        const trackingDuration = tracking.intervals.reduce((sum, interval) => {
+            return sum + parseInt(interval.time, 10); // Convertimos a número y sumamos
+        }, 0);
+        return totalSum + trackingDuration; // Sumamos al total general
+    }, 0);
+
+    return formatDuration(totalDuration); // Reutilizamos la función formatDuration
+}
+
+
+export function formatInterval(interval: Interval): string {
+    const startDate = dayjs(parseInt(interval.start, 10));
+    const endDate = dayjs(parseInt(interval.end, 10));
+    const duration = endDate.diff(startDate);
+
+    const formattedDuration = formatDuration(duration);
+
+    return `${formattedDuration} on ${startDate.format('MMM D')}`;
 }

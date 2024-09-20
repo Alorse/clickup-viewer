@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 import { ApiWrapper } from '../lib/apiWrapper';
 import { TrackingItem } from './timesItem/trackingItem';
 import { IntervalItem } from './timesItem/intervalItem';
-import { Task } from '../types';
+import { Task, Tracking } from '../types';
+import { formatTrackingDuration } from '../lib/timer';
 
 const collapsedConst = vscode.TreeItemCollapsibleState.Collapsed;
 const noCollapsedConst = vscode.TreeItemCollapsibleState.None;
@@ -26,15 +27,20 @@ export class TimeTrackerListProvider implements vscode.TreeDataProvider<vscode.T
     async getChildren(element?: vscode.TreeItem): Promise<(vscode.TreeItem)[]> {
         const resolve: Array<vscode.TreeItem> = [];
         if (!this.task) {
-            const noTaskItem = new vscode.TreeItem('You must select a task to Time Track', noCollapsedConst);
+            const noTaskItem = new vscode.TreeItem('Select a task to track', noCollapsedConst);
             noTaskItem.iconPath = new vscode.ThemeIcon('history');
             resolve.push(noTaskItem);
             return Promise.resolve(resolve);
         }
 
+        const trackedTime : Tracking[] = await this.apiwrapper.getTrackedTime(this.task.id);
         if (element === undefined) {
-            const trackedTime = await this.apiwrapper.getTrackedTime(this.task.id);
-            if (trackedTime) {
+            this.headerItem(resolve, trackedTime, this.task.name);
+            if (trackedTime.length === 1) {
+                for (const interval of trackedTime[0].intervals) {
+                    resolve.push(new IntervalItem(interval, noCollapsedConst));
+                }
+            } else {
                 for (const tracking of trackedTime) {
                     resolve.push(new TrackingItem(tracking, collapsedConst));
                 }
@@ -53,5 +59,19 @@ export class TimeTrackerListProvider implements vscode.TreeDataProvider<vscode.T
 
     refresh() {
         this._onDidChangeTreeData.fire(undefined);
+    }
+
+    private headerItem(resolve: Array<vscode.TreeItem>, trackedTime: Tracking[], taskName: string): Promise<(vscode.TreeItem)[]>  {
+        const totalTime = formatTrackingDuration(trackedTime);
+        const header = new vscode.TreeItem(`Total Time: ${totalTime}`, noCollapsedConst);
+        header.iconPath = new vscode.ThemeIcon('server');
+        header.tooltip = `${taskName} (${totalTime})`;
+        header.contextValue = 'timeTracker';
+        resolve.push(header);
+        const subHeader = new vscode.TreeItem('', noCollapsedConst);
+        subHeader.description = taskName;
+        subHeader.tooltip = `${taskName} (${totalTime})`;
+        resolve.push(subHeader);
+        return Promise.resolve(resolve);
     }
 }

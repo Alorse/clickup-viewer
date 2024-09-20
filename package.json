@@ -49,6 +49,12 @@
         "title": "%trackTime.title%",
         "category": "%displayName%",
         "icon": "$(history)"
+      },
+      {
+        "command": "clickup.startTrackingTime",
+        "title": "%trackTime.title%",
+        "category": "%displayName%",
+        "icon": "$(play)"
       }
     ],
     "viewsContainers": {
@@ -99,6 +105,11 @@
           "command": "clickup.trackedTime",
           "when": "viewItem == taskItem",
           "group": "inline@2"
+        },
+        {
+          "command": "clickup.startTrackingTime",
+          "when": "viewItem == timeTracker",
+          "group": "inline"
         }
       ]
     },
