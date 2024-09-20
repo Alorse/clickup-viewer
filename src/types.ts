@@ -177,6 +177,7 @@ export type Interval = {
     time: string
     source: string,
     date_added: string,
+    description: string,
 };
 
 export type Tracking = {

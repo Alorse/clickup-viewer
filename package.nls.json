@@ -9,5 +9,5 @@
     "workspaces.name": "Workspaces",
     "timeTracker.name": "Time Tracker",
     "getToken.title": "Show Token",
-    "workOnTask.title": "Work on Task"
+    "trackTime.title": "Track Time"
 }

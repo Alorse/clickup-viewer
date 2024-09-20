@@ -7,7 +7,7 @@ import { Task } from '../types';
 const collapsedConst = vscode.TreeItemCollapsibleState.Collapsed;
 const noCollapsedConst = vscode.TreeItemCollapsibleState.None;
 
-export class TimesListProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
+export class TimeTrackerListProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
     private readonly _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined> = new vscode.EventEmitter<vscode.TreeItem | undefined>();
     readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined> = this._onDidChangeTreeData.event;
 
@@ -26,6 +26,9 @@ export class TimesListProvider implements vscode.TreeDataProvider<vscode.TreeIte
     async getChildren(element?: vscode.TreeItem): Promise<(vscode.TreeItem)[]> {
         const resolve: Array<vscode.TreeItem> = [];
         if (!this.task) {
+            const noTaskItem = new vscode.TreeItem('You must select a task to Time Track', noCollapsedConst);
+            noTaskItem.iconPath = new vscode.ThemeIcon('history');
+            resolve.push(noTaskItem);
             return Promise.resolve(resolve);
         }
 

@@ -6,7 +6,7 @@ import {
 	ThemeColor
 } from "vscode";
 import { ApiWrapper } from "./apiWrapper";
-import { CreateTime, Task } from "../types";
+import { CreateTime, Task, Interval } from "../types";
 
 const DEFAULT_TIME = "00:00:00";
 const FORMAT_TIME = "HH:mm:ss";
@@ -213,4 +213,33 @@ export function formatDuration(inputDuration: number) {
 		return DEFAULT_TIME;
 	}
 	return duration.format(FORMAT_TIME);
+}
+
+export function formatInterval(interval: Interval) {
+    const startDate = dayjs(parseInt(interval.start));
+    const endDate = dayjs(parseInt(interval.end));
+    const totalDuration = dayjs.duration(endDate.diff(startDate));
+
+    const days = Math.floor(totalDuration.asDays());
+    const hours = totalDuration.hours();
+    const minutes = totalDuration.minutes();
+    const seconds = totalDuration.seconds();
+
+    // Más de 24 horas
+    if (days >= 1) {
+        return `${days}d ${hours}h ${minutes}m on ${startDate.format('MMM D')}`;
+    }
+
+    // Más de 1 hora
+    if (hours >= 1) {
+        return `${hours}h ${minutes}m on ${startDate.format('MMM D')}`;
+    }
+
+    // Más de 1 minuto
+    if (minutes >= 1) {
+        return `${minutes}m on ${startDate.format('MMM D')}`;
+    }
+
+    // Menos de 60 segundos
+    return `${seconds}s on ${startDate.format('MMM D')}`;
 }

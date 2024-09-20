@@ -35,7 +35,7 @@
       {
         "command": "clickup.refreshMyTasks",
         "title": "%refreshMyTask.title%",
-        "category": "ClickUp",
+        "category": "%displayName%",
         "icon": "$(sync)"
       },
       {
@@ -43,6 +43,12 @@
         "title": "%openInWeb.title%",
         "category": "%displayName%",
         "icon": "$(globe)"
+      },
+      {
+        "command": "clickup.trackedTime",
+        "title": "%trackTime.title%",
+        "category": "%displayName%",
+        "icon": "$(history)"
       }
     ],
     "viewsContainers": {
@@ -63,6 +69,10 @@
         {
           "id": "myTasksViewer",
           "name": "%myTasks.name%"
+        },
+        {
+          "id": "timeTracker",
+          "name": "%timeTracker.name%"
         }
       ]
     },
@@ -84,6 +94,11 @@
           "command": "clickup.openInWeb",
           "when": "viewItem == taskItem",
           "group": "inline@1"
+        },
+        {
+          "command": "clickup.trackedTime",
+          "when": "viewItem == taskItem",
+          "group": "inline@2"
         }
       ]
     },
@@ -115,11 +130,11 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.7",
-    "@types/node": "^20.16.5",
+    "@types/mocha": "^10.0.8",
+    "@types/node": "^22.5.5",
     "@types/vscode": "^1.93.0",
-    "@typescript-eslint/eslint-plugin": "^8.3.0",
-    "@typescript-eslint/parser": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.6.0",
+    "@typescript-eslint/parser": "^8.6.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
     "eslint": "^9.9.1",
@@ -127,6 +142,7 @@
   },
   "dependencies": {
     "@vscode/l10n": "^0.0.18",
-    "clickup.js": "^3.0.4"
+    "clickup.js": "^3.0.4",
+    "dayjs": "^1.11.13"
   }
 }

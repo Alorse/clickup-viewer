@@ -1,8 +1,6 @@
-
-import path = require('path');
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
 import { Interval } from '../../types';
-import { unixtimeToString } from '../../lib/timer';
+import { unixtimeToString, formatInterval } from '../../lib/timer';
 
 export class IntervalItem extends TreeItem {
     constructor(
@@ -11,11 +9,12 @@ export class IntervalItem extends TreeItem {
     ) {
         const start = unixtimeToString(Number.parseInt(intervalItem.start));
         const end = unixtimeToString(Number.parseInt(intervalItem.end));
-        const title = `${start} - ${end}`;
 
-        super(title, collapsibleState);
+        super(intervalItem.description, collapsibleState);
         this.id = `${intervalItem.id}`;
-        this.iconPath = ThemeIcon.File;
+        this.label = formatInterval(intervalItem);
+        this.tooltip = `${start} - ${end}`;
+        this.iconPath = new ThemeIcon('watch');
     }
     contextValue = 'trackingItem';
 }

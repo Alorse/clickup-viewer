@@ -12,7 +12,7 @@ export class TrackingItem extends TreeItem {
         const title = `${trackingItem.user.username} (${formatDuration(trackingItem.time)})`;
         super(title, collapsibleState);
         this.id = `${trackingItem.time}`;
-        this.iconPath = ThemeIcon.Folder;
+        this.iconPath = new ThemeIcon('person');
     }
     contextValue = 'trackingItem';
 }
