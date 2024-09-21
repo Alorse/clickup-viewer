@@ -36,12 +36,13 @@ export default class Timer {
 
 		this.startCallback = startCallback;
 		this.stopCallback = stopCallback;
+		const taskId = task.custom_id ? task.custom_id : task.id;
 
 		// create status bar items
 		if (!this._statusBarItem) {
 			this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
 			this._statusBarItem.command = "clickup.stopTimer";
-			this._statusBarItem.tooltip = `Pause Timer for [${this.task.custom_id}] ${this.task.name}`;
+			this._statusBarItem.tooltip = `Pause Timer for [${taskId}] ${this.task.name}`;
 			this._statusBarItem.show();
 		}
 		if (!this._statusBarStartButton) {
@@ -50,7 +51,7 @@ export default class Timer {
 			);
 			this._statusBarStartButton.text = "$(triangle-right)";
 			this._statusBarStartButton.command = "clickup.startTimer";
-			this._statusBarStartButton.tooltip = `Start Timer for [${this.task.custom_id}] ${this.task.name}`;
+			this._statusBarStartButton.tooltip = `Start Timer for [${taskId}] ${this.task.name}`;
 		}
 		if (!this._statusBarPauseButton) {
 			this._statusBarPauseButton = window.createStatusBarItem(
@@ -58,7 +59,7 @@ export default class Timer {
 			);
 			this._statusBarPauseButton.text = "$(debug-pause)";
 			this._statusBarPauseButton.command = "clickup.stopTimer";
-			this._statusBarPauseButton.tooltip = `Pause Timer for [${this.task.custom_id}] ${this.task.name}`;
+			this._statusBarPauseButton.tooltip = `Pause Timer for [${taskId}] ${this.task.name}`;
 		}
 
 		this._statusBarStartButton.show();

@@ -1,22 +1,20 @@
 import * as vscode from 'vscode';
+import { Task } from '../types';
 
 export class TaskStatusBarItem {
-    taskItem;
-
-    readonly defaultCommand = 'clickup.taskChooser';
-    readonly defaultIcon = '$(zoom-in) ';
-    readonly defaultIconTaskSetted = '$(bookmark) ';
-    readonly defaultText = `ClickUp task`;
-    readonly defaultTooltip = "Choose a task";
+    public taskItem;
 
     constructor() {
         this.taskItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-        this.setDefaults();
-        // this.taskItem.show();
+        this.taskItem.show();
     }
 
-    setCommand(command: string) {
-        this.taskItem.command = command;
+    setCommand(command: string, props: Task) {
+        this.taskItem.command = {
+            title: '',
+            command: command,
+            arguments: [props]
+        };
     }
 
     setText(text: string) {
@@ -27,9 +25,6 @@ export class TaskStatusBarItem {
     }
 
     setDefaults() {
-        this.setCommand(this.defaultCommand);
-        this.setText(this.defaultIcon + this.defaultText);
-        this.setTooltip(this.defaultTooltip);
-        this.taskItem.show();
+        this.taskItem.hide();
     }
 }

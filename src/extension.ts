@@ -36,12 +36,13 @@ export async function activate(context: vscode.ExtensionContext) {
 		//If token exists fetch data
 		apiWrapper = new ApiWrapper(token);
 		me = await apiWrapper.getUser();
-		taskController = new TaskController(apiWrapper, storageManager);
-
+		
 		teams = await apiWrapper.getTeams();
 		taskListProvider = new TaskListProvider(teams, apiWrapper, storageManager);
 		myTaskListProvider = new MyTaskListProvider(apiWrapper, teams, me.id, storageManager);
 		timeTrackerListProvider = new TimeTrackerListProvider(apiWrapper);
+
+		taskController = new TaskController(apiWrapper, storageManager, timeTrackerListProvider);
 
 		registerDecorators(context);
 		startTreeViews();
@@ -87,9 +88,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	vscode.commands.registerCommand('clickup.trackedTime', (taskItem) => {
-		const task = taskItem.task;
-		timeTrackerListProvider.task = task;  // Actualiza la tarea en el provider
+		timeTrackerListProvider.task = taskItem.task;
     	timeTrackerListProvider.refresh(); 
+	});
+
+	vscode.commands.registerCommand('clickup.startTrackingTime', (taskItem) => {
+		taskController.selectTasks(taskItem.command.arguments[0]);
 	});
 
 }
