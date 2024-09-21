@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { ApiWrapper } from '../lib/apiWrapper';
-import { TrackingItem } from './timesItem/trackingItem';
-import { IntervalItem } from './timesItem/intervalItem';
+import { TrackingItem } from './timesItem/TrackingItem';
+import { IntervalItem } from './timesItem/IntervalItem';
 import { Task, Tracking } from '../types';
 import { formatTrackingDuration } from '../lib/timer';
 
@@ -12,8 +12,9 @@ export class TimeTrackerListProvider implements vscode.TreeDataProvider<vscode.T
     private readonly _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined> = new vscode.EventEmitter<vscode.TreeItem | undefined>();
     readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined> = this._onDidChangeTreeData.event;
 
-    task?: Task;
-    apiwrapper: ApiWrapper;
+    public task?: Task;
+    private apiwrapper: ApiWrapper;
+    private currentTracking?: Tracking[];
 
     constructor(apiWrapper: ApiWrapper, task?: Task) {
         this.task = task;
@@ -33,15 +34,15 @@ export class TimeTrackerListProvider implements vscode.TreeDataProvider<vscode.T
             return Promise.resolve(resolve);
         }
 
-        const trackedTime : Tracking[] = await this.apiwrapper.getTrackedTime(this.task.id);
         if (element === undefined) {
-            this.headerItem(resolve, trackedTime, this.task.name);
-            if (trackedTime.length === 1) {
-                for (const interval of trackedTime[0].intervals) {
+            this.currentTracking = await this.apiwrapper.getTrackedTime(this.task.id);
+            this.headerItem(resolve, this.currentTracking, this.task);
+            if (this.currentTracking .length === 1) {
+                for (const interval of this.currentTracking [0].intervals) {
                     resolve.push(new IntervalItem(interval, noCollapsedConst));
                 }
             } else {
-                for (const tracking of trackedTime) {
+                for (const tracking of this.currentTracking ) {
                     resolve.push(new TrackingItem(tracking, collapsedConst));
                 }
             }
@@ -61,16 +62,22 @@ export class TimeTrackerListProvider implements vscode.TreeDataProvider<vscode.T
         this._onDidChangeTreeData.fire(undefined);
     }
 
-    private headerItem(resolve: Array<vscode.TreeItem>, trackedTime: Tracking[], taskName: string): Promise<(vscode.TreeItem)[]>  {
+    private headerItem(resolve: Array<vscode.TreeItem>, trackedTime: Tracking[], task: Task): Promise<(vscode.TreeItem)[]>  {
         const totalTime = formatTrackingDuration(trackedTime);
         const header = new vscode.TreeItem(`Total Time: ${totalTime}`, noCollapsedConst);
+        header.id = task.id;
         header.iconPath = new vscode.ThemeIcon('server');
-        header.tooltip = `${taskName} (${totalTime})`;
+        header.tooltip = `${task.name} (${totalTime})`;
+        header.command = {
+            command: 'TimeTrackingTask', // Does not matter
+            title: '',
+            arguments: [task] // Only this matters
+        };
         header.contextValue = 'timeTracker';
         resolve.push(header);
         const subHeader = new vscode.TreeItem('', noCollapsedConst);
-        subHeader.description = taskName;
-        subHeader.tooltip = `${taskName} (${totalTime})`;
+        subHeader.description = task.name;
+        subHeader.tooltip = `${task.name} (${totalTime})`;
         resolve.push(subHeader);
         return Promise.resolve(resolve);
     }
