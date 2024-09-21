@@ -13,7 +13,6 @@ export class OpenTaskPanel {
     constructor(task: Task) {
         this.tempFilePath = path.join(os.tmpdir(), task.id);
         const taskContent = this.createMarkdownContent(task);
-        console.log(task);
         fs.writeFile(this.tempFilePath, taskContent, err => {
             if (err) {
                 vscode.window.showErrorMessage(`Error writing to temp file: ${err}`);
@@ -143,8 +142,7 @@ export class OpenTaskPanel {
      */
     private async openTaskMarkdownFile(): Promise<void> {
         const doc = await vscode.workspace.openTextDocument(this.tempFilePath);
-        // await vscode.window.showTextDocument(doc, vscode.ViewColumn.One, false);
-        await vscode.commands.executeCommand('markdown.showPreview', doc.uri);
+        setTimeout( async() => await vscode.commands.executeCommand('markdown.showPreview', doc.uri), 10);
     }
 }
 
