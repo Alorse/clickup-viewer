@@ -43,6 +43,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		timeTrackerListProvider = new TimeTrackerListProvider(apiWrapper);
 
 		taskController = new TaskController(apiWrapper, storageManager, timeTrackerListProvider);
+		taskController.initSelectedTask();
 
 		registerDecorators(context);
 		startTreeViews();
@@ -93,7 +94,14 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	vscode.commands.registerCommand('clickup.startTrackingTime', (taskItem) => {
-		taskController.selectTasks(taskItem.command.arguments[0]);
+		taskController.selectTasks(taskItem.command.arguments);
+	});
+
+	vscode.commands.registerCommand('clickup.startTimer', () => {
+		taskController.startTimer();
+	});
+	vscode.commands.registerCommand('clickup.stopTimer', () => {
+		taskController.stopTimer();
 	});
 
 }

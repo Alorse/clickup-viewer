@@ -142,7 +142,7 @@ export class OpenTaskPanel {
      */
     private async openTaskMarkdownFile(): Promise<void> {
         const doc = await vscode.workspace.openTextDocument(this.tempFilePath);
-        setTimeout( async() => await vscode.commands.executeCommand('markdown.showPreview', doc.uri), 10);
+        setTimeout( async() => await vscode.commands.executeCommand('markdown.showPreview', doc.uri), 100);
     }
 }
 

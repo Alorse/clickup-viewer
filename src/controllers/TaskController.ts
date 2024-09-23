@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Task, Time } from '../types';
+import { Task, Time, Tracking } from '../types';
 import Timer from '../lib/timer';
 import { ApiWrapper } from '../lib/apiWrapper';
 import { StatusChanger } from '../lib/statusChanger';
@@ -29,7 +29,9 @@ export class TaskController {
         });
     }
 
-    public async selectTasks(task: Task) {
+    public async selectTasks(params: any, ifFromStorage: boolean = false) {
+        const task = params[0];
+        const currentTracking = params[1];
         const limitLength = 30;
         let localTask: Task = task;
         // Checks that the saved task data is complete, if not, reloads it
@@ -54,12 +56,31 @@ export class TaskController {
             this.timer?.destroy();
             this.timer = new Timer(
                 localTask,
+                currentTracking,
                 this.apiWrapper,
                 () => { },
                 () => {
                     this.timeTrackerListProvider.refresh();
                 });
             this.restoreTimer(localTask.team_id, localTask.id);
+            if (!ifFromStorage) {
+                this.startTimer();
+            }
+        }
+    }
+
+    /**
+     * Initialize the selected task from storage.
+     * If the task is found, it starts the timer.
+     */
+    public async initSelectedTask() {
+        this.selectedTaskData = await this.storageManager.getValue('selectedTaskData');
+        if (this.selectedTaskData) {
+            const trakingTime = await this.apiWrapper.getTrackedTime(this.selectedTaskData.id);
+            if (trakingTime) {
+                this.selectTasks([this.selectedTaskData, trakingTime], true);
+            }
+            
         }
     }
     
@@ -84,6 +105,29 @@ export class TaskController {
                 this.timer?.restore(parseInt(time.start));
             }
         });
+    }
+
+    /**
+     * Starts the timer for the currently selected task.
+     * If the timer is not currently running, this function will start it.
+     * If the timer is already running, this function has no effect.
+     */
+    public startTimer() {
+        if (this.timer) {
+            this.timer.start();
+        }
+    }
+
+
+    /**
+     * Stops the timer for the currently selected task.
+     * If the timer is not currently running, this function has no effect.
+     * If the timer is already running, this function will stop it.
+     */
+    public stopTimer() {
+        if (this.timer) {
+            this.timer.stop();
+        }
     }
 
     public dispose() {

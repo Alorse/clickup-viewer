@@ -37,7 +37,7 @@ export class TimeTrackerListProvider implements vscode.TreeDataProvider<vscode.T
         if (element === undefined) {
             this.currentTracking = await this.apiwrapper.getTrackedTime(this.task.id);
             this.headerItem(resolve, this.currentTracking, this.task);
-            if (this.currentTracking .length === 1) {
+            if (this.currentTracking.length === 1) {
                 for (const interval of this.currentTracking [0].intervals) {
                     resolve.push(new IntervalItem(interval, noCollapsedConst));
                 }
@@ -71,7 +71,7 @@ export class TimeTrackerListProvider implements vscode.TreeDataProvider<vscode.T
         header.command = {
             command: 'TimeTrackingTask', // Does not matter
             title: '',
-            arguments: [task] // Only this matters
+            arguments: [task, trackedTime] // Only this matters
         };
         header.contextValue = 'timeTracker';
         resolve.push(header);
