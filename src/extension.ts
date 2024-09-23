@@ -112,11 +112,6 @@ function startTreeViews() {
 		showCollapseAll: true,
 	});
 
-	setTimeout(() => {
-		console.log("Refreshing task list...");
-		taskListProvider.refresh();
-	}, 500);
-
 	vscode.window.createTreeView('myTasksViewer', {
 		treeDataProvider: myTaskListProvider,
 		showCollapseAll: true

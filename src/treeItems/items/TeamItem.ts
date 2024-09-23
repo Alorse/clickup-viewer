@@ -48,22 +48,23 @@ export class TeamItem extends TreeItem {
     };
 
     private async setIconFromStorageOrDownload(avatarUrl: string, teamId: string) {
-        // Verifica si la imagen ya está en el almacenamiento
+        // Checks if the image is already stored
         const storedIconPath = await this.storageManager.getValue(`teamIcon-${teamId}`);
-        if (storedIconPath) {
-            // Si existe en el almacenamiento, úsala
+
+        if (storedIconPath && fs.existsSync(storedIconPath)) {
+            // If it exists in storage, use it
             this.iconPath = {
                 light: storedIconPath,
                 dark: storedIconPath
             };
         } else {
-            // Si no existe, descarga la imagen y guárdala
+            // If it doesn't exist, download the image and store it
             this.downloadAvatar(avatarUrl, teamId).then((iconPath) => {
                 this.iconPath = {
                     light: iconPath,
                     dark: iconPath
                 };
-                this.storageManager.setValue(`teamIcon-${teamId}`, iconPath); 
+                this.storageManager.setValue(`teamIcon-${teamId}`, iconPath);
             });
         }
     }
