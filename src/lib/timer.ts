@@ -5,7 +5,7 @@ import {
 	StatusBarAlignment,
 	ThemeColor
 } from "vscode";
-import { ApiWrapper } from "./apiWrapper";
+import { ApiWrapper } from "./ApiWrapper";
 import { CreateTime, Task, Interval, Tracking } from "../types";
 
 const DEFAULT_TIME = "00:00:00";

@@ -1,13 +1,13 @@
-import { LocalStorageService } from './localStorageService';
+import { LocalStorageController } from '../controllers/LocalStorageController';
 import * as vscode from 'vscode';
 
 export default class TokenManager {
-    storageManager?: LocalStorageService;
+    storageManager?: LocalStorageController;
     token?: string = undefined;
     regex = /^[a-z]{2}[_]\d+[_].{32}/g;
     l10n: any; 
 
-    constructor(storageManager: LocalStorageService, l10n: any) {
+    constructor(storageManager: LocalStorageController, l10n: any) {
         this.storageManager = storageManager;
         this.l10n = l10n;
     }

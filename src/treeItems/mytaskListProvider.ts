@@ -2,18 +2,18 @@ import * as vscode from 'vscode';
 import { Team, Task } from '../types';
 import { TaskItem } from './items/TaskItem';
 import { TeamItem } from './items/TeamItem';
-import { ApiWrapper } from '../lib/apiWrapper';
-import { LocalStorageService } from '../lib/localStorageService';
+import { ApiWrapper } from '../lib/ApiWrapper';
+import { LocalStorageController } from '../controllers/LocalStorageController';
 
 export class MyTaskListProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
     apiwrapper: ApiWrapper;
     teams: Team[];
     userId: number;
-    storageManager: LocalStorageService;
+    storageManager: LocalStorageController;
     collapsedConst = vscode.TreeItemCollapsibleState.Collapsed;
 
-    constructor(apiWrapper: ApiWrapper, teams: Array<Team>, userId: number, storageManager: LocalStorageService) {
+    constructor(apiWrapper: ApiWrapper, teams: Array<Team>, userId: number, storageManager: LocalStorageController) {
         this.apiwrapper = apiWrapper;
         this.userId = userId;
         this.teams = teams;

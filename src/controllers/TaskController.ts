@@ -1,27 +1,24 @@
 import * as vscode from 'vscode';
 import { Task, Time, Tracking } from '../types';
 import Timer from '../lib/timer';
-import { ApiWrapper } from '../lib/apiWrapper';
-import { StatusChanger } from '../lib/statusChanger';
+import { ApiWrapper } from '../lib/ApiWrapper';
 import { TaskStatusBarItem } from '../lib/taskStatusBarItem';
-import { LocalStorageService } from '../lib/localStorageService';
+import { LocalStorageController } from './LocalStorageController';
 import { TimeTrackerListProvider } from '../treeItems/TimeTrackerListProvider';
 
 export class TaskController {
     private _forgetTask: vscode.Disposable;
-    private storageManager: LocalStorageService;
+    private storageManager: LocalStorageController;
     private taskStatusBarItem: TaskStatusBarItem;
     private selectedTaskData: Task | undefined;
-    private statusChanger: StatusChanger;
     private apiWrapper: ApiWrapper;
     private timer?: Timer;
     private timeTrackerListProvider: TimeTrackerListProvider;
 
 
-    constructor( wrapper: ApiWrapper, storageManager: LocalStorageService, timeTrackerListProvider: TimeTrackerListProvider) {
+    constructor( wrapper: ApiWrapper, storageManager: LocalStorageController, timeTrackerListProvider: TimeTrackerListProvider) {
         this.apiWrapper = wrapper;
         this.storageManager = storageManager;
-        this.statusChanger = new StatusChanger(wrapper);
         this.taskStatusBarItem = new TaskStatusBarItem();
         this.timeTrackerListProvider = timeTrackerListProvider;
         this._forgetTask = vscode.commands.registerCommand('clickup.forgetTask', () => {
@@ -87,7 +84,6 @@ export class TaskController {
     public async forgetTask(showMessage: boolean) {
         this.taskStatusBarItem.setDefaults();
         this.selectedTaskData = undefined;
-        this.statusChanger.itemsList.task.id = undefined;
         this.storageManager.setValue('selectedTaskData', undefined);
         this.storageManager.setValue('listOfTaskId', undefined);
         if (showMessage) {

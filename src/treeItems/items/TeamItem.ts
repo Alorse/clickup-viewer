@@ -5,7 +5,7 @@ import { getIconPath } from '../../constants';
 import * as https from 'https';
 import * as fs from 'fs';
 import * as os from 'os';
-import { LocalStorageService } from '../../lib/localStorageService';
+import { LocalStorageController } from '../../controllers/LocalStorageController';
 
 export class TeamItem extends TreeItem {
     
@@ -13,7 +13,7 @@ export class TeamItem extends TreeItem {
         public id: string,
         public readonly team: Team,
         public readonly collapsibleState: TreeItemCollapsibleState,
-        public storageManager: LocalStorageService
+        public storageManager: LocalStorageController
     ) {
         super(team.name, collapsibleState);
 

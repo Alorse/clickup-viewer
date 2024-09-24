@@ -1,6 +1,6 @@
 import { Memento } from "vscode";
 
-export class LocalStorageService {
+export class LocalStorageController {
 
     constructor(private storage: Memento) { }
 
