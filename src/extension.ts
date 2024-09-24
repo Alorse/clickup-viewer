@@ -11,6 +11,7 @@ import { ApiWrapper } from './lib/ApiWrapper';
 import { User, Team, Task } from './types';
 import { OpenTaskPanel } from './panelItems/openTaskPanel';
 import { TaskController } from './controllers/TaskController';
+import { ItemsController } from './controllers/ItemsController';
 
 let storageManager: LocalStorageController;
 let tokenManager: TokenManager;
@@ -22,6 +23,8 @@ let me: User;
 let teams: Team[];
 let taskController: TaskController;
 let timeTrackerListProvider: TimeTrackerListProvider;
+let itemsController: ItemsController;
+
 export async function activate(context: vscode.ExtensionContext) {
 
 	l10n.config({
@@ -31,13 +34,14 @@ export async function activate(context: vscode.ExtensionContext) {
 	storageManager = new LocalStorageController(context.workspaceState);
 	tokenManager = new TokenManager(storageManager, l10n);
 	token = await tokenManager.init();
-
+	
 	if (token) {
 		//If token exists fetch data
 		apiWrapper = new ApiWrapper(token);
+		itemsController = new ItemsController(apiWrapper, storageManager);
 		me = await apiWrapper.getUser();
 		
-		teams = await apiWrapper.getTeams();
+		teams = await itemsController.getTeams();
 		taskListProvider = new TaskListProvider(teams, apiWrapper, storageManager);
 		myTaskListProvider = new MyTaskListProvider(apiWrapper, teams, me.id, storageManager);
 		timeTrackerListProvider = new TimeTrackerListProvider(apiWrapper);
@@ -76,7 +80,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		new OpenTaskPanel(task);
 	});
 
-	vscode.commands.registerCommand('clickup.refreshSpaces', () => {
+	vscode.commands.registerCommand('clickup.refreshSpaces', async () => {
 		taskListProvider.refresh();
 	});
 
@@ -104,6 +108,23 @@ export async function activate(context: vscode.ExtensionContext) {
 		taskController.stopTimer();
 	});
 
+	vscode.commands.registerCommand('clickup.filterMyTaskSpaces', async (teamItem) => {
+		showQuickPick(teamItem.id);
+	});
+
+}
+
+async function showQuickPick(id: string) {
+	const spaces = await itemsController.getSpaces(id);
+	const result = await vscode.window.showQuickPick(
+		spaces.map(space => ({ label: space.name })),
+		{
+			placeHolder: 'Select the spaces from which you want to view your tasks.',
+			onDidSelectItem: item => vscode.window.showInformationMessage(`Focus: ${item}`),
+			canPickMany: true
+		}
+	);
+	vscode.window.showInformationMessage(`Got: ${result}`);
 }
 
 function startTreeViews() {
@@ -127,36 +148,6 @@ function startTreeViews() {
 function registerDecorators(context: vscode.ExtensionContext) {
 	const taskFileDecorationProvider = new TaskItemDecorationProvider();
 	context.subscriptions.push(taskFileDecorationProvider);
-}
-
-async function showQuickPick() {
-	let i = 0;
-	const result = await vscode.window.showQuickPick([
-		{ label: 'one' },
-		{ label: 'two' },
-		{ label: 'three' },
-	], {
-		placeHolder: 'one, two or three',
-		onDidSelectItem: item => vscode.window.showInformationMessage(`Focus ${++i}: ${item}`), 
-		canPickMany: true
-	});
-	vscode.window.showInformationMessage(`Got: ${result}`);
-}
-
-/**
- * Shows an input box using window.showInputBox().
- */
-async function showInputBox() {
-	const result = await vscode.window.showInputBox({
-		value: 'abcdef',
-		valueSelection: [2, 4],
-		placeHolder: 'For example: fedcba. But not: 123',
-		validateInput: text => {
-			vscode.window.showInformationMessage(`Validating: ${text}`);
-			return text === '123' ? 'Not 123!' : null;
-		}
-	});
-	vscode.window.showInformationMessage(`Got: ${result}`);
 }
 
 export function deactivate() { }

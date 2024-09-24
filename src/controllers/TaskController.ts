@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Task, Time, Tracking } from '../types';
+import { Task, Time } from '../types';
 import Timer from '../lib/timer';
 import { ApiWrapper } from '../lib/ApiWrapper';
 import { TaskStatusBarItem } from '../lib/taskStatusBarItem';

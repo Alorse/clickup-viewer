@@ -39,6 +39,12 @@
         "icon": "$(sync)"
       },
       {
+        "command": "clickup.filterMyTaskSpaces",
+        "title": "%filterhMyTaskSpaces.title%",
+        "category": "%displayName%",
+        "icon": "$(list-filter)"
+      },
+      {
         "command": "clickup.openInWeb",
         "title": "%openInWeb.title%",
         "category": "%displayName%",
@@ -99,6 +105,11 @@
         {
           "command": "clickup.openInWeb",
           "when": "viewItem == taskItem",
+          "group": "inline@1"
+        },
+        {
+          "command": "clickup.filterMyTaskSpaces",
+          "when": "view == myTasksViewer && viewItem == teamItem",
           "group": "inline@1"
         },
         {

@@ -7,19 +7,22 @@ import { TeamItem } from './items/TeamItem';
 import { FolderItem } from './items/FolderItem';
 import { ApiWrapper } from '../lib/ApiWrapper';
 import { LocalStorageController } from '../controllers/LocalStorageController';
+import { ItemsController } from '../controllers/ItemsController';
 
 export class TaskListProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
     teams: Team[];
-    apiwrapper: ApiWrapper;
+    apiWrapper: ApiWrapper;
     storageManager: LocalStorageController;
+    itemsController: ItemsController;
 
     collapsedConst = vscode.TreeItemCollapsibleState.Collapsed;
     noCollapsedConst = vscode.TreeItemCollapsibleState.None;
 
     constructor(teams: Team[], apiWrapper: ApiWrapper, storageManager: LocalStorageController) {
         this.teams = teams;
-        this.apiwrapper = apiWrapper;
+        this.apiWrapper = apiWrapper;
         this.storageManager = storageManager;
+        this.itemsController = new ItemsController(apiWrapper, storageManager);
     }
 
     getTreeItem(element: any): vscode.TreeItem {
@@ -27,7 +30,7 @@ export class TaskListProvider implements vscode.TreeDataProvider<vscode.TreeItem
     }
 
     async getChildren(element?: (Space)): Promise<(vscode.TreeItem)[]> {
-        var resolve: any = [];
+        let resolve: any = [];
 
         if (element === undefined) {
             resolve = Object.values(this.teams).map((team: Team) => {
@@ -37,21 +40,21 @@ export class TaskListProvider implements vscode.TreeDataProvider<vscode.TreeItem
         }
 
         if (element instanceof TeamItem) {
-            var spaces: Space[] = await this.apiwrapper.getSpaces(element.id);
+            let spaces: Space[] = await this.itemsController.getSpaces(element.id);
             resolve = Object.values(spaces).map((space: Space) => {
                 return new SpaceItem(space, this.collapsedConst);
             });
         }
 
         if (element instanceof SpaceItem) {
-            var folders: Folder[] = await this.apiwrapper.getFolders(element.id);
+            let folders: Folder[] = await this.apiWrapper.getFolders(element.id);
             resolve = Object.values(folders).map((folder: Folder) => {
                 return new FolderItem(folder, this.collapsedConst);
             });
-            var lists: List[] = await this.apiwrapper.getFolderLists(element.id);
+            let lists: List[] = await this.apiWrapper.getFolderLists(element.id);
             await Promise.all(
                 Object.values(lists).map(async (list: List) => {
-                    var taskCount = await this.apiwrapper.countTasks(list.id);
+                    let taskCount = await this.apiWrapper.countTasks(list.id);
                     resolve.push(new ListItem(list, this.collapsedConst, taskCount));
                 })
             );
@@ -59,18 +62,18 @@ export class TaskListProvider implements vscode.TreeDataProvider<vscode.TreeItem
         }
 
         if (element instanceof FolderItem) {
-            var lists: List[] = await this.apiwrapper.getLists(element.folder.id);
+            let lists: List[] = await this.apiWrapper.getLists(element.folder.id);
             await Promise.all(
                 Object.values(lists).map(async (list: List) => {
                     //* Fetches the task count for the list
-                    var taskCount = await this.apiwrapper.countTasks(list.id);
+                    let taskCount = await this.apiWrapper.countTasks(list.id);
                     resolve.push(new ListItem(list, this.collapsedConst, taskCount));
                 })
             );
         }
 
         if (element instanceof ListItem) {
-            var tasks: Task[] = await this.apiwrapper.getTasks(element.list.id);
+            let tasks: Task[] = await this.apiWrapper.getTasks(element.list.id);
             for (const task of tasks) {
                 resolve.push(new TaskItem(task, this.noCollapsedConst));
             }
@@ -83,6 +86,7 @@ export class TaskListProvider implements vscode.TreeDataProvider<vscode.TreeItem
     readonly onDidChangeTreeData: vscode.Event<undefined | null | void> = this._onDidChangeTreeData.event;
 
     refresh(): void {
+        this.itemsController.resetTeams();
         this._onDidChangeTreeData.fire();
     }
 

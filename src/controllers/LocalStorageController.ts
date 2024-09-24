@@ -13,4 +13,10 @@ export class LocalStorageController {
         //TODO: check response of update
         return true;
     }
+
+    public async deleteKey(key: string) {
+        await this.storage.update(key, undefined);
+        //TODO: check response of update
+        return true;
+    }
 }

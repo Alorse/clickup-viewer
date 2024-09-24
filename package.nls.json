@@ -4,6 +4,7 @@
     "myTasks.name": "My Tasks",
     "openInWeb.title": "Open in Web",
     "refreshMyTask.title": "Refresh My Tasks",
+    "filterhMyTaskSpaces.title": "Filter Spaces",
     "refreshSpaces.title": "Refresh Workspaces",
     "setToken.title": "Set Token",
     "workspaces.name": "Workspaces",
