@@ -1,18 +1,18 @@
 import * as vscode from 'vscode';
 import * as l10n from '@vscode/l10n';
 import * as translations from '../l10n/bundle.l10n.json';
-import { LocalStorageService } from './lib/localStorageService';
+import { LocalStorageController } from './controllers/LocalStorageController';
 import { TaskListProvider } from './treeItems/taskListProvider';
 import { MyTaskListProvider } from './treeItems/myTaskListProvider';
 import { TaskItemDecorationProvider } from './providers/TaskItemDecorationProvider';
 import { TimeTrackerListProvider } from './treeItems/TimeTrackerListProvider';
-import TokenManager from './lib/tokenManager';
-import { ApiWrapper } from './lib/apiWrapper';
+import TokenManager from './lib/TokenManager';
+import { ApiWrapper } from './lib/ApiWrapper';
 import { User, Team, Task } from './types';
 import { OpenTaskPanel } from './panelItems/openTaskPanel';
 import { TaskController } from './controllers/TaskController';
 
-let storageManager: LocalStorageService;
+let storageManager: LocalStorageController;
 let tokenManager: TokenManager;
 let apiWrapper: ApiWrapper;
 let taskListProvider: TaskListProvider;
@@ -28,7 +28,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		contents: translations,
 	});
 
-	storageManager = new LocalStorageService(context.workspaceState);
+	storageManager = new LocalStorageController(context.workspaceState);
 	tokenManager = new TokenManager(storageManager, l10n);
 	token = await tokenManager.init();
 
@@ -127,6 +127,36 @@ function startTreeViews() {
 function registerDecorators(context: vscode.ExtensionContext) {
 	const taskFileDecorationProvider = new TaskItemDecorationProvider();
 	context.subscriptions.push(taskFileDecorationProvider);
+}
+
+async function showQuickPick() {
+	let i = 0;
+	const result = await vscode.window.showQuickPick([
+		{ label: 'one' },
+		{ label: 'two' },
+		{ label: 'three' },
+	], {
+		placeHolder: 'one, two or three',
+		onDidSelectItem: item => vscode.window.showInformationMessage(`Focus ${++i}: ${item}`), 
+		canPickMany: true
+	});
+	vscode.window.showInformationMessage(`Got: ${result}`);
+}
+
+/**
+ * Shows an input box using window.showInputBox().
+ */
+async function showInputBox() {
+	const result = await vscode.window.showInputBox({
+		value: 'abcdef',
+		valueSelection: [2, 4],
+		placeHolder: 'For example: fedcba. But not: 123',
+		validateInput: text => {
+			vscode.window.showInformationMessage(`Validating: ${text}`);
+			return text === '123' ? 'Not 123!' : null;
+		}
+	});
+	vscode.window.showInformationMessage(`Got: ${result}`);
 }
 
 export function deactivate() { }
