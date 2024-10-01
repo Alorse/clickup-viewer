@@ -2,28 +2,36 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { Task, Checklist, Priority, Status, Tag, Creator, CustomField } from '../types';
+import { Task, Checklist, Priority, Status, Tag, Creator, CustomField, Space, Folder, List } from '../types';
 import { formatDueDate, TODAY, OVERDUE, CLICKUP_URL } from '../constants';
+import { LocalStorageController } from '../controllers/LocalStorageController';
 
 export const USER_CUSTOM_FIELD_NAME = "Stakeholder";
 
 export class OpenTaskPanel {
     tempFilePath: string;
+    storageManager: LocalStorageController;
 
-    constructor(task: Task) {
+    constructor(task: Task, storageManager: LocalStorageController) {
         this.tempFilePath = path.join(os.tmpdir(), task.id);
-        const taskContent = this.createMarkdownContent(task);
-        fs.writeFile(this.tempFilePath, taskContent, err => {
-            if (err) {
-                vscode.window.showErrorMessage(`Error writing to temp file: ${err}`);
-                return;
-            }
+        this.storageManager = storageManager;
+        this.createMarkdownContent(task).then((taskContent) => {
+            fs.writeFile(this.tempFilePath, taskContent, err => {
+                if (err) {
+                    vscode.window.showErrorMessage(`Error writing to temp file: ${err}`);
+                    return;
+                }
+                this.openTaskMarkdownFile();
+            });
+        }).catch((err) => {
+            vscode.window.showErrorMessage(`Error creating markdown content: ${err}`);
         });
-        this.openTaskMarkdownFile();
     }
 
-    private createMarkdownContent(task: Task): string {        
-        let taskContent = `# [[${task.custom_id ? task.custom_id : task.id}]](${task.url}) ${task.name}\n\n`;
+    private async createMarkdownContent(task: Task): Promise<string> {
+        let taskContent = ``;
+        taskContent += await this.showBreadcrumb(task.space, task.folder, task.list, task.team_id);
+        taskContent += `# [[${task.custom_id ? task.custom_id : task.id}]](${task.url}) ${task.name}\n\n`;
         taskContent += this.showParent(task.parent);
         taskContent += this.showStatus(task.status);
         taskContent += this.showDates(task.due_date);
@@ -40,7 +48,7 @@ export class OpenTaskPanel {
             taskContent += this.showUserInfo("Created by", task.creator);
         }
         taskContent += `\n\n\n[Open in ClickUp](${task.url})`;
-
+    
         return taskContent;
     }
 
@@ -49,6 +57,14 @@ export class OpenTaskPanel {
             return '';
         }
         return `**Parent**: [[${parent}]](${CLICKUP_URL}/t/${parent})\n\n`;
+    }
+    private async showBreadcrumb(space: Space, folder: Folder, list: List, teamId: string): Promise<string> {
+        const storedSpaces = await this.storageManager.getValue(`space-${teamId}`);
+        if (storedSpaces) {
+            const foundSpace = storedSpaces.find((s: Space) => s.id === space.id);
+            return `*${foundSpace.name} / ${folder.name} / ${list.name}*\n\n`;
+        }
+        return `*${folder.name} / ${list.name}*\n\n`;
     }
 
     private showDates(date: string | null): string {

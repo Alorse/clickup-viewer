@@ -77,7 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	vscode.commands.registerCommand('clickup.openTask', async (task: Task) => {
-		new OpenTaskPanel(task);
+		new OpenTaskPanel(task, storageManager);
 	});
 
 	vscode.commands.registerCommand('clickup.refreshSpaces', async () => {
