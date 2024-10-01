@@ -390,6 +390,11 @@ export class ApiWrapper {
      * @memberof ApiWrapper
      */
     async getMyTask(teamId: string, assignId: string, subtasks = false) {
+        let spaceIds: number[] = [];
+        if (teamId === '529') {
+            spaceIds = [90020068902]; // Tickets
+        }
+
         const options = {
             "assignees[]": [
                 // assignees: TODO: waiting to accept the PR to fix
@@ -398,9 +403,7 @@ export class ApiWrapper {
             "statuses[]": [
                 // 'in progress'
             ],
-            "space_ids[]": [
-                90020068902 // Tickets
-            ],
+            "space_ids[]": spaceIds,
             "subtasks": subtasks,
             "include_markdown_description": true
         };
