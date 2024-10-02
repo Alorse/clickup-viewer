@@ -56,13 +56,16 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('clickup.setToken', async () => {
 		if (await tokenManager.askToken()) {
 			const token = await tokenManager.getToken();
-			apiWrapper = new ApiWrapper(token);
-			try {
-				me = await apiWrapper.getUser();
-				vscode.window.showInformationMessage(`${l10n.t('SET_TOKEN')} ${me.username}`);
-			} catch (error) {
-				vscode.window.showErrorMessage(l10n.t("INVALID_TOKEN"));
-				console.log((<Error>error).message);
+			if (token) {
+				apiWrapper = new ApiWrapper(token);
+				try {
+					me = await apiWrapper.getUser();
+					vscode.window.showInformationMessage(`${l10n.t('SET_TOKEN')} ${me.username}`);
+				} catch (error) {
+					vscode.window.showErrorMessage(l10n.t("INVALID_TOKEN"));
+					// eslint-disable-next-line no-console
+					console.log((<Error>error).message);
+				}
 			}
 		}
 	});
@@ -89,7 +92,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	vscode.commands.registerCommand('clickup.openInWeb', (taskItem) => {
-		taskItem.task.url && vscode.env.openExternal(vscode.Uri.parse(taskItem.task.url));
+		if (taskItem.task.url) {
+			vscode.env.openExternal(vscode.Uri.parse(taskItem.task.url));
+		}
 	});
 
 	vscode.commands.registerCommand('clickup.trackedTime', (taskItem) => {

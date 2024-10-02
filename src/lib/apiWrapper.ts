@@ -1,4 +1,5 @@
-const clickup = require('clickup.js');
+// @ts-expect-error I don't know how to fix it
+import * as clickup from 'clickup.js';
 
 import { Task, Member, Status, Tag, Team, Tracking, CreateTime, Time } from '../types';
 
@@ -318,7 +319,7 @@ export class ApiWrapper {
         return body.data;
     }
 
-    async getRunningTime(teamId: string, userId?: string): Promise<Time> {
+    async getRunningTime(teamId: string): Promise<Time> {
         const { body } = await this.clickup.teams.getRunningTimeEntry(teamId);
         return body.data;
     }

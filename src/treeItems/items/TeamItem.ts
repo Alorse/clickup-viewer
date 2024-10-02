@@ -1,4 +1,4 @@
-import path = require('path');
+import * as path from 'path';
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { Team } from '../../types';
 import { getIconPath } from '../../constants';
@@ -39,6 +39,8 @@ export class TeamItem extends TreeItem {
                     resolve(filePath);
                 });
             }).on('error', (err) => {
+                // eslint-disable-next-line no-console
+                console.log(err);
                 fs.unlink(filePath, (err) => {
                     reject(err);
                 });

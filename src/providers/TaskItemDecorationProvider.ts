@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import { TaskItem } from '../treeItems/items/TaskItem';
 
 export class TaskItemDecorationProvider implements vscode.FileDecorationProvider {
     private _onDidChangeFileDecorations = new vscode.EventEmitter<vscode.Uri | vscode.Uri[]>();

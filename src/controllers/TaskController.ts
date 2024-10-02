@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Task, Time } from '../types';
+import { Task, Time, Tracking } from '../types';
 import Timer from '../lib/timer';
 import { ApiWrapper } from '../lib/ApiWrapper';
 import { TaskStatusBarItem } from '../lib/taskStatusBarItem';
@@ -26,7 +26,7 @@ export class TaskController {
         });
     }
 
-    public async selectTasks(params: any, ifFromStorage: boolean = false) {
+    public async selectTasks(params: [Task, Tracking[]], ifFromStorage: boolean = false) {
         const task = params[0];
         const currentTracking = params[1];
         const limitLength = 30;
@@ -93,7 +93,6 @@ export class TaskController {
 
     public restoreTimer(teamId: string, taskId: string) {
         if (!teamId) {
-            console.log("No `teamId` found to restore time");
             return;
         }
         this.apiWrapper.getRunningTime(teamId).then((time: Time) => {

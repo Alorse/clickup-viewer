@@ -4,9 +4,13 @@ export class LocalStorageController {
 
     constructor(private storage: Memento) { }
 
-    public async getValue(key: string): Promise<any> {
-        return await this.storage.get(key);
+public async getValue(key: string): Promise<any> {
+    const value = await this.storage.get(key);
+    if (value === undefined || value === null) {
+        throw new Error(`No se encontró el valor para la clave ${key}`);
     }
+    return value;
+}
 
     public async setValue<T>(key: string, value: T) {
         await this.storage.update(key, value);

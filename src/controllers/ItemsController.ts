@@ -18,12 +18,15 @@ export class ItemsController {
     async getTeams(): Promise<Team[]> {
         const storedTeams = await this.storageManager.getValue('teams');
         if (storedTeams) {
-            this.teams = storedTeams.map((team: Team) => ({
-                id: team.id,
-                name: team.name,
-                color: team.color,
-                avatar: team.avatar,
-            }));
+            if (Array.isArray(storedTeams)) {
+                this.teams = storedTeams.map((team: Team) => ({
+                    id: team.id,
+                    name: team.name,
+                    color: team.color,
+                    avatar: team.avatar,
+                    members: team.members,
+                }));
+            }
         } else {
             this.teams = await this.apiWrapper.getTeams();
             await this.storageManager.setValue('teams', this.teams);

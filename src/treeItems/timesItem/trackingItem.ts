@@ -1,5 +1,4 @@
 
-import path = require('path');
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
 import { Tracking } from '../../types';
 import { formatDuration } from '../../lib/timer';

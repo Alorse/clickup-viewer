@@ -40,21 +40,21 @@ export class TaskListProvider implements vscode.TreeDataProvider<vscode.TreeItem
         }
 
         if (element instanceof TeamItem) {
-            let spaces: Space[] = await this.itemsController.getSpaces(element.id);
+            const spaces: Space[] = await this.itemsController.getSpaces(element.id);
             resolve = Object.values(spaces).map((space: Space) => {
                 return new SpaceItem(space, this.collapsedConst);
             });
         }
 
         if (element instanceof SpaceItem) {
-            let folders: Folder[] = await this.apiWrapper.getFolders(element.id);
+            const folders: Folder[] = await this.apiWrapper.getFolders(element.id);
             resolve = Object.values(folders).map((folder: Folder) => {
                 return new FolderItem(folder, this.collapsedConst);
             });
-            let lists: List[] = await this.apiWrapper.getFolderLists(element.id);
+            const lists: List[] = await this.apiWrapper.getFolderLists(element.id);
             await Promise.all(
                 Object.values(lists).map(async (list: List) => {
-                    let taskCount = await this.apiWrapper.countTasks(list.id);
+                    const taskCount = await this.apiWrapper.countTasks(list.id);
                     resolve.push(new ListItem(list, this.collapsedConst, taskCount));
                 })
             );
@@ -62,18 +62,18 @@ export class TaskListProvider implements vscode.TreeDataProvider<vscode.TreeItem
         }
 
         if (element instanceof FolderItem) {
-            let lists: List[] = await this.apiWrapper.getLists(element.folder.id);
+            const lists: List[] = await this.apiWrapper.getLists(element.folder.id);
             await Promise.all(
                 Object.values(lists).map(async (list: List) => {
                     //* Fetches the task count for the list
-                    let taskCount = await this.apiWrapper.countTasks(list.id);
+                    const taskCount = await this.apiWrapper.countTasks(list.id);
                     resolve.push(new ListItem(list, this.collapsedConst, taskCount));
                 })
             );
         }
 
         if (element instanceof ListItem) {
-            let tasks: Task[] = await this.apiWrapper.getTasks(element.list.id);
+            const tasks: Task[] = await this.apiWrapper.getTasks(element.list.id);
             for (const task of tasks) {
                 resolve.push(new TaskItem(task, this.noCollapsedConst));
             }

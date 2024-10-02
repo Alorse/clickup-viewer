@@ -7,12 +7,12 @@ import {
 } from "vscode";
 import { ApiWrapper } from "./ApiWrapper";
 import { CreateTime, Task, Interval, Tracking } from "../types";
+import dayjs from "dayjs";
+import duration from 'dayjs/plugin/duration';
 
 const DEFAULT_TIME = "00:00:00";
 const FORMAT_TIME = "HH:mm:ss";
 
-const dayjs = require("dayjs");
-const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
 
 export default class Timer {
@@ -107,6 +107,7 @@ export default class Timer {
 					this.startCallback();
 				}
 			}).catch((error) => {
+				// eslint-disable-next-line no-console
 				console.log(`start time error: ${error}`);
 			});
 	}
@@ -118,7 +119,7 @@ export default class Timer {
 	 */
 	public stop() {
 		this.apiWrapper.stopTime(this.task.team_id)
-			.then((response) => {
+			.then(() => {
 				this._statusBarItem.hide();
 				this._statusBarStartButton.show();
 				this._statusBarItem.text = DEFAULT_TIME;
@@ -127,6 +128,7 @@ export default class Timer {
 					this.stopCallback();
 				}
 			}).catch((error) => {
+				// eslint-disable-next-line no-console
 				console.log(`stop time error: ${error}`);
 			});
 	}

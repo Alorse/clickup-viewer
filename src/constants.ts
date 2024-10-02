@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as os from 'os';
-import path = require('path');
+import * as path from 'path';
 // extension.ts
 export const DEFAULT_TASK_DETAILS = [
     'id', 'name', 'description', 'url', 'status', 'priority', 'creator', 'tags', 'assignees'
@@ -12,7 +12,7 @@ export const TODAY = 'today';
 export const CLICKUP_URL = 'https://app.clickup.com/';
 
 export const getRandomHexColor = (): string => {
-    let n = (Math.random() * 0xfffff * 1000000).toString(16);
+    const n = (Math.random() * 0xfffff * 1000000).toString(16);
     return "#" + n.slice(0, 6);
 };
 
@@ -24,7 +24,7 @@ export const getIconPath = (iconColor: string | null, itemName: string): string 
             <text x="8" y="12" font-size="12" font-weight="bold" text-anchor="middle" fill="#ffffff">${initial}</text>
         </svg>
     `;
-    const nameSlug = itemName.toLowerCase().replace(/[ \/]/g, '-');
+    const nameSlug = itemName.toLowerCase().replace(/[ /]/g, '-');
     const tempIconPath = path.join(os.tmpdir(), `ico-${nameSlug}.svg`);
     fs.writeFileSync(tempIconPath, svgIcon);
     return tempIconPath;

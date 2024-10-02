@@ -1,13 +1,18 @@
 import { LocalStorageController } from '../controllers/LocalStorageController';
 import * as vscode from 'vscode';
 
+interface L10n {
+    t: (key: string) => string;
+  }
+  
+
 export default class TokenManager {
     storageManager?: LocalStorageController;
     token?: string = undefined;
     regex = /^[a-z]{2}[_]\d+[_].{32}/g;
-    l10n: any; 
+    l10n: L10n; 
 
-    constructor(storageManager: LocalStorageController, l10n: any) {
+    constructor(storageManager: LocalStorageController, l10n: L10n) {
         this.storageManager = storageManager;
         this.l10n = l10n;
     }
@@ -60,7 +65,7 @@ export default class TokenManager {
      * @return {*}  {Promise<string>}
      * @memberof TokenManager
      */
-    async getToken(): Promise<string> {
+    async getToken(): Promise<string|undefined> {
         return await this.storageManager?.getValue('token');
     }
     /**
@@ -83,7 +88,7 @@ export default class TokenManager {
      * @memberof TokenManager
      */
     async delete() {
-        const response = await this.storageManager?.setValue('token', undefined);
+        await this.storageManager?.setValue('token', undefined);
         return true;
     }
     /**
