@@ -152,6 +152,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@eslint/js": "^9.11.1",
     "@types/mocha": "^10.0.8",
     "@types/node": "^22.5.5",
     "@types/vscode": "^1.93.0",
@@ -159,8 +160,10 @@
     "@typescript-eslint/parser": "^8.6.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
-    "eslint": "^9.9.1",
-    "typescript": "^5.5.4"
+    "eslint": "^9.11.1",
+    "globals": "^15.10.0",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.8.0"
   },
   "dependencies": {
     "@vscode/l10n": "^0.0.18",
