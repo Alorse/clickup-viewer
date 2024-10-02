@@ -5,7 +5,9 @@ export class TaskStatusBarItem {
     public taskItem;
 
     constructor() {
-        this.taskItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+        this.taskItem = vscode.window.createStatusBarItem(
+            vscode.StatusBarAlignment.Left,
+        );
         this.taskItem.show();
     }
 
@@ -13,7 +15,7 @@ export class TaskStatusBarItem {
         this.taskItem.command = {
             title: '',
             command: command,
-            arguments: [props]
+            arguments: [props],
         };
     }
 

@@ -1,13 +1,13 @@
 {
-  "INVALID_TOKEN": "Invalid Token!",
-  "NO": "No",
-  "NO_CLICKUP_TOKEN_SET": "No clickup token has been set!",
-  "NO_LIST_ID": "Impossible to retrieve states from reference list",
-  "NO_TASK_SELECTED": "No ClickUp task has been selected",
-  "SET_TOKEN": "Welcome to ClickUp Viewer",
-  "TOKEN_NOT_FOUND": "No token was found",
-  "TASK_FORGOTTEN": "Task was forgotten",
-  "TASK_TOOLTIP": "ClickUp Task you are working on",
-  "YES": "Yes",
-  "YOUR_TOKEN {0}": "Your token is: {0}"
+    "INVALID_TOKEN": "Invalid Token!",
+    "NO": "No",
+    "NO_CLICKUP_TOKEN_SET": "No clickup token has been set!",
+    "NO_LIST_ID": "Impossible to retrieve states from reference list",
+    "NO_TASK_SELECTED": "No ClickUp task has been selected",
+    "SET_TOKEN": "Welcome to ClickUp Viewer",
+    "TOKEN_NOT_FOUND": "No token was found",
+    "TASK_FORGOTTEN": "Task was forgotten",
+    "TASK_TOOLTIP": "ClickUp Task you are working on",
+    "YES": "Yes",
+    "YOUR_TOKEN {0}": "Your token is: {0}"
 }

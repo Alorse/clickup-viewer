@@ -1,174 +1,174 @@
 {
-  "name": "clickup-viewer",
-  "displayName": "%displayName%",
-  "publisher": "Alorse",
-  "description": "%description%",
-  "repository": "https://github.com/Alorse/clickup-viewer",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.93.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [],
-  "main": "./out/extension.js",
-  "l10n": "./l10n",
-  "contributes": {
-    "commands": [
-      {
-        "command": "clickup.setToken",
-        "title": "%setToken.title%",
-        "category": "%displayName%"
-      },
-      {
-        "command": "clickup.getToken",
-        "title": "%getToken.title%",
-        "category": "%displayName%"
-      },
-      {
-        "command": "clickup.refreshSpaces",
-        "title": "%refreshSpaces.title%",
-        "category": "%displayName%",
-        "icon": "$(sync)"
-      },
-      {
-        "command": "clickup.refreshMyTasks",
-        "title": "%refreshMyTask.title%",
-        "category": "%displayName%",
-        "icon": "$(sync)"
-      },
-      {
-        "command": "clickup.filterMyTaskSpaces",
-        "title": "%filterhMyTaskSpaces.title%",
-        "category": "%displayName%",
-        "icon": "$(list-filter)"
-      },
-      {
-        "command": "clickup.openInWeb",
-        "title": "%openInWeb.title%",
-        "category": "%displayName%",
-        "icon": "$(globe)"
-      },
-      {
-        "command": "clickup.trackedTime",
-        "title": "%trackTime.title%",
-        "category": "%displayName%",
-        "icon": "$(history)"
-      },
-      {
-        "command": "clickup.startTrackingTime",
-        "title": "%trackTime.title%",
-        "category": "%displayName%",
-        "icon": "$(play)"
-      }
+    "name": "clickup-viewer",
+    "displayName": "%displayName%",
+    "publisher": "Alorse",
+    "description": "%description%",
+    "repository": "https://github.com/Alorse/clickup-viewer",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.93.0"
+    },
+    "categories": [
+        "Other"
     ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "clickup",
-          "title": "%displayName%",
-          "icon": "./resources/activitybar/logo_sidebar.svg"
-        }
-      ]
+    "activationEvents": [],
+    "main": "./out/extension.js",
+    "l10n": "./l10n",
+    "contributes": {
+        "commands": [
+            {
+                "command": "clickup.setToken",
+                "title": "%setToken.title%",
+                "category": "%displayName%"
+            },
+            {
+                "command": "clickup.getToken",
+                "title": "%getToken.title%",
+                "category": "%displayName%"
+            },
+            {
+                "command": "clickup.refreshSpaces",
+                "title": "%refreshSpaces.title%",
+                "category": "%displayName%",
+                "icon": "$(sync)"
+            },
+            {
+                "command": "clickup.refreshMyTasks",
+                "title": "%refreshMyTask.title%",
+                "category": "%displayName%",
+                "icon": "$(sync)"
+            },
+            {
+                "command": "clickup.filterMyTaskSpaces",
+                "title": "%filterhMyTaskSpaces.title%",
+                "category": "%displayName%",
+                "icon": "$(list-filter)"
+            },
+            {
+                "command": "clickup.openInWeb",
+                "title": "%openInWeb.title%",
+                "category": "%displayName%",
+                "icon": "$(globe)"
+            },
+            {
+                "command": "clickup.trackedTime",
+                "title": "%trackTime.title%",
+                "category": "%displayName%",
+                "icon": "$(history)"
+            },
+            {
+                "command": "clickup.startTrackingTime",
+                "title": "%trackTime.title%",
+                "category": "%displayName%",
+                "icon": "$(play)"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "clickup",
+                    "title": "%displayName%",
+                    "icon": "./resources/activitybar/logo_sidebar.svg"
+                }
+            ]
+        },
+        "views": {
+            "clickup": [
+                {
+                    "id": "spacesViewer",
+                    "name": "%workspaces.name%"
+                },
+                {
+                    "id": "myTasksViewer",
+                    "name": "%myTasks.name%"
+                },
+                {
+                    "id": "timeTracker",
+                    "name": "%timeTracker.name%"
+                }
+            ]
+        },
+        "menus": {
+            "view/title": [
+                {
+                    "command": "clickup.refreshSpaces",
+                    "when": "view == spacesViewer",
+                    "group": "navigation"
+                },
+                {
+                    "command": "clickup.refreshMyTasks",
+                    "when": "view == myTasksViewer",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "clickup.openInWeb",
+                    "when": "viewItem == taskItem",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "clickup.filterMyTaskSpaces",
+                    "when": "view == myTasksViewer && viewItem == teamItem",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "clickup.trackedTime",
+                    "when": "viewItem == taskItem",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "clickup.startTrackingTime",
+                    "when": "viewItem == timeTracker",
+                    "group": "inline"
+                }
+            ]
+        },
+        "colors": [
+            {
+                "id": "clickup.taskItemLabelOverdue",
+                "description": "Color used for the task item text",
+                "defaults": {
+                    "light": "#e38388",
+                    "dark": "#e38388"
+                }
+            },
+            {
+                "id": "clickup.taskItemLabelExpiresToday",
+                "description": "Color used for the task item text",
+                "defaults": {
+                    "light": "#fbcb5c",
+                    "dark": "#fbcb5c"
+                }
+            }
+        ]
     },
-    "views": {
-      "clickup": [
-        {
-          "id": "spacesViewer",
-          "name": "%workspaces.name%"
-        },
-        {
-          "id": "myTasksViewer",
-          "name": "%myTasks.name%"
-        },
-        {
-          "id": "timeTracker",
-          "name": "%timeTracker.name%"
-        }
-      ]
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src",
+        "test": "vscode-test"
     },
-    "menus": {
-      "view/title": [
-        {
-          "command": "clickup.refreshSpaces",
-          "when": "view == spacesViewer",
-          "group": "navigation"
-        },
-        {
-          "command": "clickup.refreshMyTasks",
-          "when": "view == myTasksViewer",
-          "group": "navigation"
-        }
-      ],
-      "view/item/context": [
-        {
-          "command": "clickup.openInWeb",
-          "when": "viewItem == taskItem",
-          "group": "inline@1"
-        },
-        {
-          "command": "clickup.filterMyTaskSpaces",
-          "when": "view == myTasksViewer && viewItem == teamItem",
-          "group": "inline@1"
-        },
-        {
-          "command": "clickup.trackedTime",
-          "when": "viewItem == taskItem",
-          "group": "inline@2"
-        },
-        {
-          "command": "clickup.startTrackingTime",
-          "when": "viewItem == timeTracker",
-          "group": "inline"
-        }
-      ]
+    "devDependencies": {
+        "@eslint/js": "^9.11.1",
+        "@types/mocha": "^10.0.8",
+        "@types/node": "^22.5.5",
+        "@types/vscode": "^1.93.0",
+        "@typescript-eslint/eslint-plugin": "^8.6.0",
+        "@typescript-eslint/parser": "^8.6.0",
+        "@vscode/test-cli": "^0.0.10",
+        "@vscode/test-electron": "^2.4.1",
+        "eslint": "^9.11.1",
+        "globals": "^15.10.0",
+        "prettier": "3.3.3",
+        "typescript": "^5.5.4",
+        "typescript-eslint": "^8.8.0"
     },
-    "colors": [
-      {
-        "id": "clickup.taskItemLabelOverdue",
-        "description": "Color used for the task item text",
-        "defaults": {
-          "light": "#e38388",
-          "dark": "#e38388"
-        }
-      },
-      {
-        "id": "clickup.taskItemLabelExpiresToday",
-        "description": "Color used for the task item text",
-        "defaults": {
-          "light": "#fbcb5c",
-          "dark": "#fbcb5c"
-        }
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src",
-    "test": "vscode-test"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.11.1",
-    "@types/mocha": "^10.0.8",
-    "@types/node": "^22.5.5",
-    "@types/vscode": "^1.93.0",
-    "@typescript-eslint/eslint-plugin": "^8.6.0",
-    "@typescript-eslint/parser": "^8.6.0",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1",
-    "eslint": "^9.11.1",
-    "globals": "^15.10.0",
-    "prettier": "3.3.3",
-    "typescript": "^5.5.4",
-    "typescript-eslint": "^8.8.0"
-  },
-  "dependencies": {
-    "@vscode/l10n": "^0.0.18",
-    "clickup.js": "^3.0.4",
-    "dayjs": "^1.11.13"
-  }
+    "dependencies": {
+        "@vscode/l10n": "^0.0.18",
+        "clickup.js": "^3.0.4",
+        "dayjs": "^1.11.13"
+    }
 }

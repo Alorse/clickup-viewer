@@ -8,13 +8,13 @@ import * as path from 'path';
 export class FolderItem extends TreeItem {
     constructor(
         public folder: Folder,
-        public readonly collapsibleState: TreeItemCollapsibleState
+        public readonly collapsibleState: TreeItemCollapsibleState,
     ) {
         super(folder.name, collapsibleState);
         this.id = folder.id;
         this.iconPath = {
             light: this.getIconPath(folder.name),
-            dark: this.getIconPath(folder.name)
+            dark: this.getIconPath(folder.name),
         };
     }
     contextValue = 'folderItem';

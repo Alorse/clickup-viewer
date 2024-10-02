@@ -18,7 +18,7 @@ export class ListItem extends TreeItem {
         this.id = list.id;
         this.iconPath = {
             light: this.getIconPath(list.name),
-            dark: this.getIconPath(list.name)
+            dark: this.getIconPath(list.name),
         };
     }
     contextValue = 'listItem';

@@ -15,18 +15,27 @@ export class TaskController {
     private timer?: Timer;
     private timeTrackerListProvider: TimeTrackerListProvider;
 
-
-    constructor( wrapper: ApiWrapper, storageManager: LocalStorageController, timeTrackerListProvider: TimeTrackerListProvider) {
+    constructor(
+        wrapper: ApiWrapper,
+        storageManager: LocalStorageController,
+        timeTrackerListProvider: TimeTrackerListProvider,
+    ) {
         this.apiWrapper = wrapper;
         this.storageManager = storageManager;
         this.taskStatusBarItem = new TaskStatusBarItem();
         this.timeTrackerListProvider = timeTrackerListProvider;
-        this._forgetTask = vscode.commands.registerCommand('clickup.forgetTask', () => {
-            this.forgetTask(false);
-        });
+        this._forgetTask = vscode.commands.registerCommand(
+            'clickup.forgetTask',
+            () => {
+                this.forgetTask(false);
+            },
+        );
     }
 
-    public async selectTasks(params: [Task, Tracking[]], ifFromStorage: boolean = false) {
+    public async selectTasks(
+        params: [Task, Tracking[]],
+        ifFromStorage: boolean = false,
+    ) {
         const task = params[0];
         const currentTracking = params[1];
         const limitLength = 30;
@@ -38,27 +47,33 @@ export class TaskController {
             this.storageManager.setValue('selectedTaskData', remoteTask);
             localTask = remoteTask[0];
         }
-        let message = "";
+        let message = '';
         if (task.name) {
-            message = localTask.name.length > limitLength ? `${localTask.name.substring(0, limitLength)}...` : localTask.name;
+            message =
+                localTask.name.length > limitLength
+                    ? `${localTask.name.substring(0, limitLength)}...`
+                    : localTask.name;
         }
         this.taskStatusBarItem.setText(`$(pinned) ${message}`);
-        this.taskStatusBarItem.setTooltip(`[${localTask.custom_id ? localTask.custom_id : localTask.id }] ${localTask.name}`);
-        this.taskStatusBarItem.setCommand("clickup.openTask", task);
-    
+        this.taskStatusBarItem.setTooltip(
+            `[${localTask.custom_id ? localTask.custom_id : localTask.id}] ${localTask.name}`,
+        );
+        this.taskStatusBarItem.setCommand('clickup.openTask', task);
+
         //save last TaskId and ListId value
         this.storageManager.setValue('selectedTaskData', localTask);
-    
+
         if (this.apiWrapper) {
             this.timer?.destroy();
             this.timer = new Timer(
                 localTask,
                 currentTracking,
                 this.apiWrapper,
-                () => { },
+                () => {},
                 () => {
                     this.timeTrackerListProvider.refresh();
-                });
+                },
+            );
             this.restoreTimer(localTask.team_id, localTask.id);
             if (!ifFromStorage) {
                 this.startTimer();
@@ -71,16 +86,18 @@ export class TaskController {
      * If the task is found, it starts the timer.
      */
     public async initSelectedTask() {
-        this.selectedTaskData = await this.storageManager.getValue('selectedTaskData');
+        this.selectedTaskData =
+            await this.storageManager.getValue('selectedTaskData');
         if (this.selectedTaskData) {
-            const trakingTime = await this.apiWrapper.getTrackedTime(this.selectedTaskData.id);
+            const trakingTime = await this.apiWrapper.getTrackedTime(
+                this.selectedTaskData.id,
+            );
             if (trakingTime) {
                 this.selectTasks([this.selectedTaskData, trakingTime], true);
             }
-            
         }
     }
-    
+
     public async forgetTask(showMessage: boolean) {
         this.taskStatusBarItem.setDefaults();
         this.selectedTaskData = undefined;
@@ -112,7 +129,6 @@ export class TaskController {
             this.timer.start();
         }
     }
-
 
     /**
      * Stops the timer for the currently selected task.

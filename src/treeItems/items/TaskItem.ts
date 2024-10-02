@@ -6,10 +6,10 @@ import * as fs from 'fs';
 import * as os from 'os';
 
 export class TaskItem extends vscode.TreeItem {
-
     constructor(
         public task: Task,
-        public readonly collapsibleState: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None,
+        public readonly collapsibleState: vscode.TreeItemCollapsibleState = vscode
+            .TreeItemCollapsibleState.None,
     ) {
         super(task.name, collapsibleState);
 
@@ -22,7 +22,7 @@ export class TaskItem extends vscode.TreeItem {
 
         this.iconPath = {
             light: this.getIconPath(task.id, iconColor),
-            dark: this.getIconPath(task.id, iconColor)
+            dark: this.getIconPath(task.id, iconColor),
         };
 
         this.resourceUri = this.createViewDecorationUri(task.id, dueDate[1]);
@@ -30,7 +30,7 @@ export class TaskItem extends vscode.TreeItem {
         this.command = {
             command: 'clickup.openTask',
             title: 'Open Task',
-            arguments: [task]
+            arguments: [task],
         };
     }
 
@@ -55,19 +55,25 @@ export class TaskItem extends vscode.TreeItem {
      * @param overdue whether the task is overdue, is today, or is neither
      * @return a URI that can be used to trigger a decoration
      */
-    private createViewDecorationUri(taskId: string, overdue?: string | boolean): vscode.Uri {
+    private createViewDecorationUri(
+        taskId: string,
+        overdue?: string | boolean,
+    ): vscode.Uri {
         const scheme = 'clickup-viewer';
         const uriString = `${scheme}://${taskId}`;
         const uriQuery: { [key: string]: string } = {};
         if (overdue) {
-            uriQuery.color = overdue === OVERDUE ? 'clickup.taskItemLabelOverdue' : 'clickup.taskItemLabelExpiresToday';
+            uriQuery.color =
+                overdue === OVERDUE
+                    ? 'clickup.taskItemLabelOverdue'
+                    : 'clickup.taskItemLabelExpiresToday';
         }
         const uriObject = {
             scheme: scheme,
             authority: '',
             path: taskId,
             query: new URLSearchParams(uriQuery).toString(),
-            fragment: ''
+            fragment: '',
         };
         return vscode.Uri.parse(`${uriString}?${uriObject.query}`);
     }

@@ -2,11 +2,22 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { Task, Checklist, Priority, Status, Tag, Creator, CustomField, Space, Folder, List } from '../types';
+import {
+    Task,
+    Checklist,
+    Priority,
+    Status,
+    Tag,
+    Creator,
+    CustomField,
+    Space,
+    Folder,
+    List,
+} from '../types';
 import { formatDueDate, TODAY, OVERDUE, CLICKUP_URL } from '../constants';
 import { LocalStorageController } from '../controllers/LocalStorageController';
 
-export const USER_CUSTOM_FIELD_NAME = "Stakeholder";
+export const USER_CUSTOM_FIELD_NAME = 'Stakeholder';
 
 export class OpenTaskPanel {
     tempFilePath: string;
@@ -15,22 +26,33 @@ export class OpenTaskPanel {
     constructor(task: Task, storageManager: LocalStorageController) {
         this.tempFilePath = path.join(os.tmpdir(), task.id);
         this.storageManager = storageManager;
-        this.createMarkdownContent(task).then((taskContent) => {
-            fs.writeFile(this.tempFilePath, taskContent, err => {
-                if (err) {
-                    vscode.window.showErrorMessage(`Error writing to temp file: ${err}`);
-                    return;
-                }
-                this.openTaskMarkdownFile();
+        this.createMarkdownContent(task)
+            .then((taskContent) => {
+                fs.writeFile(this.tempFilePath, taskContent, (err) => {
+                    if (err) {
+                        vscode.window.showErrorMessage(
+                            `Error writing to temp file: ${err}`,
+                        );
+                        return;
+                    }
+                    this.openTaskMarkdownFile();
+                });
+            })
+            .catch((err) => {
+                vscode.window.showErrorMessage(
+                    `Error creating markdown content: ${err}`,
+                );
             });
-        }).catch((err) => {
-            vscode.window.showErrorMessage(`Error creating markdown content: ${err}`);
-        });
     }
 
     private async createMarkdownContent(task: Task): Promise<string> {
         let taskContent = ``;
-        taskContent += await this.showBreadcrumb(task.space, task.folder, task.list, task.team_id);
+        taskContent += await this.showBreadcrumb(
+            task.space,
+            task.folder,
+            task.list,
+            task.team_id,
+        );
         taskContent += `# [[${task.custom_id ? task.custom_id : task.id}]](${task.url}) ${task.name}\n\n`;
         taskContent += this.showParent(task.parent);
         taskContent += this.showStatus(task.status);
@@ -42,13 +64,19 @@ export class OpenTaskPanel {
         taskContent += `---\n\n`;
         const customUser = this.getCustomUser(task, USER_CUSTOM_FIELD_NAME);
         if (customUser) {
-            const customUserObject = customUser as { name: string; creator: Creator; };
-            taskContent += this.showUserInfo(customUserObject.name, customUserObject.creator);
+            const customUserObject = customUser as {
+                name: string;
+                creator: Creator;
+            };
+            taskContent += this.showUserInfo(
+                customUserObject.name,
+                customUserObject.creator,
+            );
         } else {
-            taskContent += this.showUserInfo("Created by", task.creator);
+            taskContent += this.showUserInfo('Created by', task.creator);
         }
         taskContent += `\n\n\n[Open in ClickUp](${task.url})`;
-    
+
         return taskContent;
     }
 
@@ -58,10 +86,19 @@ export class OpenTaskPanel {
         }
         return `**Parent**: [[${parent}]](${CLICKUP_URL}/t/${parent})\n\n`;
     }
-    private async showBreadcrumb(space: Space, folder: Folder, list: List, teamId: string): Promise<string> {
-        const storedSpaces: Space[] = await this.storageManager.getValue(`space-${teamId}`);
+    private async showBreadcrumb(
+        space: Space,
+        folder: Folder,
+        list: List,
+        teamId: string,
+    ): Promise<string> {
+        const storedSpaces: Space[] = await this.storageManager.getValue(
+            `space-${teamId}`,
+        );
         const folderHidden = folder.hidden;
-        const foundSpaceName = storedSpaces?.find((s: Space) => s.id === space.id)?.name;
+        const foundSpaceName = storedSpaces?.find(
+            (s: Space) => s.id === space.id,
+        )?.name;
 
         return `*${foundSpaceName ? `${foundSpaceName} / ` : ''}${folderHidden ? '' : `${folder.name} / `}${list.name}*\n\n`;
     }
@@ -138,12 +175,17 @@ export class OpenTaskPanel {
      * @param customFieldName the name of the custom field to search
      * @returns an object with name and creator properties or false
      */
-    private getCustomUser(task: Task, customFieldName: string): { name: string, creator: Creator } | boolean {
-        const customField: CustomField | undefined = task.custom_fields.find(cf => cf.name === customFieldName);
+    private getCustomUser(
+        task: Task,
+        customFieldName: string,
+    ): { name: string; creator: Creator } | boolean {
+        const customField: CustomField | undefined = task.custom_fields.find(
+            (cf) => cf.name === customFieldName,
+        );
         if (customField && customField.value && customField.value.length > 0) {
             return {
                 name: customField.name,
-                creator: customField.value[0]
+                creator: customField.value[0],
             };
         }
         return false;
@@ -157,8 +199,13 @@ export class OpenTaskPanel {
      */
     private async openTaskMarkdownFile(): Promise<void> {
         const doc = await vscode.workspace.openTextDocument(this.tempFilePath);
-        setTimeout( async() => await vscode.commands.executeCommand('markdown.showPreview', doc.uri), 100);
+        setTimeout(
+            async () =>
+                await vscode.commands.executeCommand(
+                    'markdown.showPreview',
+                    doc.uri,
+                ),
+            100,
+        );
     }
 }
-
-

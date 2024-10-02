@@ -3,7 +3,15 @@ import * as os from 'os';
 import * as path from 'path';
 // extension.ts
 export const DEFAULT_TASK_DETAILS = [
-    'id', 'name', 'description', 'url', 'status', 'priority', 'creator', 'tags', 'assignees'
+    'id',
+    'name',
+    'description',
+    'url',
+    'status',
+    'priority',
+    'creator',
+    'tags',
+    'assignees',
 ];
 
 export const OVERDUE = 'overdue';
@@ -13,10 +21,13 @@ export const CLICKUP_URL = 'https://app.clickup.com/';
 
 export const getRandomHexColor = (): string => {
     const n = (Math.random() * 0xfffff * 1000000).toString(16);
-    return "#" + n.slice(0, 6);
+    return '#' + n.slice(0, 6);
 };
 
-export const getIconPath = (iconColor: string | null, itemName: string): string => {
+export const getIconPath = (
+    iconColor: string | null,
+    itemName: string,
+): string => {
     const initial = itemName.charAt(0).toUpperCase();
     const svgIcon = `
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -30,7 +41,9 @@ export const getIconPath = (iconColor: string | null, itemName: string): string 
     return tempIconPath;
 };
 
-export const formatDueDate =(dueDate: string | null): [string, string | boolean] => {
+export const formatDueDate = (
+    dueDate: string | null,
+): [string, string | boolean] => {
     if (dueDate === null) {
         return ['N/A', false];
     }
@@ -41,4 +54,3 @@ export const formatDueDate =(dueDate: string | null): [string, string | boolean]
     const dueDateString = date.toLocaleDateString();
     return [dueDateString, isToday ? TODAY : isOverdue ? OVERDUE : false];
 };
-

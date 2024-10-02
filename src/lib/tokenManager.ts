@@ -3,14 +3,13 @@ import * as vscode from 'vscode';
 
 interface L10n {
     t: (key: string) => string;
-  }
-  
+}
 
 export default class TokenManager {
     storageManager?: LocalStorageController;
     token?: string = undefined;
     regex = /^[a-z]{2}[_]\d+[_].{32}/g;
-    l10n: L10n; 
+    l10n: L10n;
 
     constructor(storageManager: LocalStorageController, l10n: L10n) {
         this.storageManager = storageManager;
@@ -33,7 +32,7 @@ export default class TokenManager {
     /**
      *
      *
-     * @return {*} 
+     * @return {*}
      * @memberof TokenManager
      */
     async askToken() {
@@ -65,13 +64,13 @@ export default class TokenManager {
      * @return {*}  {Promise<string>}
      * @memberof TokenManager
      */
-    async getToken(): Promise<string|undefined> {
+    async getToken(): Promise<string | undefined> {
         return await this.storageManager?.getValue('token');
     }
     /**
      *
      *
-     * @return {*} 
+     * @return {*}
      * @memberof TokenManager
      */
     async hasToken() {
@@ -84,7 +83,7 @@ export default class TokenManager {
     /**
      *
      *
-     * @return {*} 
+     * @return {*}
      * @memberof TokenManager
      */
     async delete() {
@@ -94,13 +93,15 @@ export default class TokenManager {
     /**
      *
      *
-     * @return {*} 
+     * @return {*}
      * @memberof TokenManager
      */
     async isValid() {
         // If token doesn't exists show error message
         if (this.token === undefined) {
-            vscode.window.showInformationMessage(this.l10n.t('NO_CLICKUP_TOKEN_SET'));
+            vscode.window.showInformationMessage(
+                this.l10n.t('NO_CLICKUP_TOKEN_SET'),
+            );
             return false;
         }
 
@@ -112,4 +113,3 @@ export default class TokenManager {
         return true;
     }
 }
-

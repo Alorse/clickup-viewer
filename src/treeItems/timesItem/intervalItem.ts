@@ -5,7 +5,7 @@ import { unixtimeToString, formatInterval } from '../../lib/Timer';
 export class IntervalItem extends TreeItem {
     constructor(
         public intervalItem: Interval,
-        public readonly collapsibleState: TreeItemCollapsibleState
+        public readonly collapsibleState: TreeItemCollapsibleState,
     ) {
         const start = unixtimeToString(Number.parseInt(intervalItem.start));
         const end = unixtimeToString(Number.parseInt(intervalItem.end));

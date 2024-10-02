@@ -8,12 +8,11 @@ import * as os from 'os';
 import { LocalStorageController } from '../../controllers/LocalStorageController';
 
 export class TeamItem extends TreeItem {
-    
     constructor(
         public id: string,
         public readonly team: Team,
         public readonly collapsibleState: TreeItemCollapsibleState,
-        public storageManager: LocalStorageController
+        public storageManager: LocalStorageController,
     ) {
         super(team.name, collapsibleState);
 
@@ -28,43 +27,53 @@ export class TeamItem extends TreeItem {
     }
     contextValue = 'teamItem';
 
-    private async downloadAvatar(avatarUrl: string, teamId: string): Promise<string> {
+    private async downloadAvatar(
+        avatarUrl: string,
+        teamId: string,
+    ): Promise<string> {
         return new Promise((resolve, reject) => {
             const filePath = path.join(os.tmpdir(), `teamIcon-${teamId}.png`);
             const file = fs.createWriteStream(filePath);
-            const request = https.get(avatarUrl, (response) => {
-                response.pipe(file);
-                file.on('finish', () => {
-                    file.close();
-                    resolve(filePath);
+            const request = https
+                .get(avatarUrl, (response) => {
+                    response.pipe(file);
+                    file.on('finish', () => {
+                        file.close();
+                        resolve(filePath);
+                    });
+                })
+                .on('error', (err) => {
+                    // eslint-disable-next-line no-console
+                    console.log(err);
+                    fs.unlink(filePath, (err) => {
+                        reject(err);
+                    });
                 });
-            }).on('error', (err) => {
-                // eslint-disable-next-line no-console
-                console.log(err);
-                fs.unlink(filePath, (err) => {
-                    reject(err);
-                });
-            });
             request.end();
         });
-    };
+    }
 
-    private async setIconFromStorageOrDownload(avatarUrl: string, teamId: string) {
+    private async setIconFromStorageOrDownload(
+        avatarUrl: string,
+        teamId: string,
+    ) {
         // Checks if the image is already stored
-        const storedIconPath: string = await this.storageManager.getValue(`teamIcon-${teamId}`);
+        const storedIconPath: string = await this.storageManager.getValue(
+            `teamIcon-${teamId}`,
+        );
 
         if (storedIconPath && fs.existsSync(storedIconPath)) {
             // If it exists in storage, use it
             this.iconPath = {
                 light: storedIconPath,
-                dark: storedIconPath
+                dark: storedIconPath,
             };
         } else {
             // If it doesn't exist, download the image and store it
             this.downloadAvatar(avatarUrl, teamId).then((iconPath) => {
                 this.iconPath = {
                     light: iconPath,
-                    dark: iconPath
+                    dark: iconPath,
                 };
                 this.storageManager.setValue(`teamIcon-${teamId}`, iconPath);
             });
