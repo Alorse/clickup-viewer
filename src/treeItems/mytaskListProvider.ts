@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Team, Task } from '../types';
+import { Team, Task, PickSpace } from '../types';
 import { TaskItem } from './items/TaskItem';
 import { TeamItem } from './items/TeamItem';
 import { ApiWrapper } from '../lib/ApiWrapper';
@@ -31,7 +31,18 @@ export class MyTaskListProvider
     }
 
     async getChildren(element?: Team | Task): Promise<vscode.TreeItem[]> {
-        const filteredSpaces = [90020068902];
+        const teamId: string = this.getTeamId(element);
+        let filteredSpaces = await this.storageManager.getValue(
+            `filtered-spaces-${teamId}`,
+        );
+        if (filteredSpaces) {
+            filteredSpaces = filteredSpaces.map((spaceId: PickSpace) =>
+                Number(spaceId),
+            );
+        } else {
+            filteredSpaces = [];
+        }
+
         // SingleTeam
         // If there is only one team, show all its tasks without creating a TeamItem
         if (element === undefined && this.teams.length === 1) {
@@ -81,5 +92,15 @@ export class MyTaskListProvider
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
+    }
+
+    private getTeamId(element?: Team | Task): string {
+        if (element === undefined && this.teams.length === 1) {
+            return this.teams[0].id;
+        }
+        if (element instanceof TeamItem) {
+            return element.team.id;
+        }
+        return '';
     }
 }

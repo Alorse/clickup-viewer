@@ -138,7 +138,8 @@ export async function activate(context: vscode.ExtensionContext) {
             const spaces = await itemsController.getSpaces(teamItem.id);
             picksController.showQuickPick(teamItem.id, spaces);
         },
-    );}
+    );
+}
 
 function startTreeViews() {
     vscode.window.createTreeView('spacesViewer', {

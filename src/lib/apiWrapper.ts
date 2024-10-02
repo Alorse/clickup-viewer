@@ -411,12 +411,12 @@ export class ApiWrapper {
      * @return {*}
      * @memberof ApiWrapper
      */
-    async getMyTask(teamId: string, assignId: string, subtasks = false) {
-        let spaceIds: number[] = [];
-        if (teamId === '529') {
-            spaceIds = [90020068902]; // Tickets
-        }
-
+    async getMyTask(
+        teamId: string,
+        assignId: string,
+        spaceIds: number[],
+        subtasks = false,
+    ) {
         const options = {
             'assignees[]': [
                 // assignees: TODO: waiting to accept the PR to fix

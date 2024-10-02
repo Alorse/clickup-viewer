@@ -7,9 +7,11 @@ export class ItemsController {
     storageManager: LocalStorageController;
     teams: Team[];
     spaces: Space[];
-    
 
-    constructor(apiWrapper: ApiWrapper, storageManager: LocalStorageController) {
+    constructor(
+        apiWrapper: ApiWrapper,
+        storageManager: LocalStorageController,
+    ) {
         this.apiWrapper = apiWrapper;
         this.storageManager = storageManager;
         this.teams = [];
@@ -37,7 +39,9 @@ export class ItemsController {
     }
 
     async getSpaces(teamId: string): Promise<Space[]> {
-        const storedSpaces: Space[] = await this.storageManager.getValue(`space-${teamId}`);
+        const storedSpaces: Space[] = await this.storageManager.getValue(
+            `space-${teamId}`,
+        );
         if (storedSpaces) {
             this.spaces = storedSpaces;
         } else {
