@@ -60,11 +60,10 @@ export class OpenTaskPanel {
     }
     private async showBreadcrumb(space: Space, folder: Folder, list: List, teamId: string): Promise<string> {
         const storedSpaces: Space[] = await this.storageManager.getValue(`space-${teamId}`);
-        if (storedSpaces) {
-            const foundSpace = storedSpaces.find((s: Space) => s.id === space.id);
-            return `*${foundSpace?.name} / ${folder.name} / ${list.name}*\n\n`;
-        }
-        return `*${folder.name} / ${list.name}*\n\n`;
+        const folderHidden = folder.hidden;
+        const foundSpaceName = storedSpaces?.find((s: Space) => s.id === space.id)?.name;
+
+        return `*${foundSpaceName ? `${foundSpaceName} / ` : ''}${folderHidden ? '' : `${folder.name} / `}${list.name}*\n\n`;
     }
 
     private showDates(date: string | null): string {
