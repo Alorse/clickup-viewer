@@ -16,7 +16,7 @@ export class ItemsController {
     }
 
     async getTeams(): Promise<Team[]> {
-        const storedTeams = await this.storageManager.getValue('teams');
+        const storedTeams: Team[] = await this.storageManager.getValue('teams');
         if (storedTeams) {
             if (Array.isArray(storedTeams)) {
                 this.teams = storedTeams.map((team: Team) => ({
@@ -36,7 +36,7 @@ export class ItemsController {
     }
 
     async getSpaces(teamId: string): Promise<Space[]> {
-        const storedSpaces = await this.storageManager.getValue(`space-${teamId}`);
+        const storedSpaces: Space[] = await this.storageManager.getValue(`space-${teamId}`);
         if (storedSpaces) {
             this.spaces = storedSpaces;
         } else {

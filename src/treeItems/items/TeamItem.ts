@@ -51,7 +51,7 @@ export class TeamItem extends TreeItem {
 
     private async setIconFromStorageOrDownload(avatarUrl: string, teamId: string) {
         // Checks if the image is already stored
-        const storedIconPath = await this.storageManager.getValue(`teamIcon-${teamId}`);
+        const storedIconPath: string = await this.storageManager.getValue(`teamIcon-${teamId}`);
 
         if (storedIconPath && fs.existsSync(storedIconPath)) {
             // If it exists in storage, use it
