@@ -220,3 +220,9 @@ export type TaskLocation = {
     list_id: string;
     space_id: string;
 };
+
+export type PickSpace = {
+    id: string;
+    label: string;
+    picked: boolean;
+};

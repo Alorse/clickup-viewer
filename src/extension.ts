@@ -12,6 +12,7 @@ import { User, Team, Task } from './types';
 import { OpenTaskPanel } from './panelItems/OpenTaskPanel';
 import { TaskController } from './controllers/TaskController';
 import { ItemsController } from './controllers/ItemsController';
+import { PicksController } from './controllers/PicksController';
 
 let storageManager: LocalStorageController;
 let tokenManager: TokenManager;
@@ -24,6 +25,7 @@ let teams: Team[];
 let taskController: TaskController;
 let timeTrackerListProvider: TimeTrackerListProvider;
 let itemsController: ItemsController;
+let picksController: PicksController;
 
 export async function activate(context: vscode.ExtensionContext) {
     l10n.config({
@@ -38,6 +40,7 @@ export async function activate(context: vscode.ExtensionContext) {
         //If token exists fetch data
         apiWrapper = new ApiWrapper(token);
         itemsController = new ItemsController(apiWrapper, storageManager);
+        picksController = new PicksController(storageManager);
         me = await apiWrapper.getUser();
 
         teams = await itemsController.getTeams();
@@ -132,25 +135,10 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
         'clickup.filterMyTaskSpaces',
         async (teamItem) => {
-            showQuickPick(teamItem.id);
+            const spaces = await itemsController.getSpaces(teamItem.id);
+            picksController.showQuickPick(teamItem.id, spaces);
         },
-    );
-}
-
-async function showQuickPick(id: string) {
-    const spaces = await itemsController.getSpaces(id);
-    const result = await vscode.window.showQuickPick(
-        spaces.map((space) => ({ label: space.name })),
-        {
-            placeHolder:
-                'Select the spaces from which you want to view your tasks.',
-            onDidSelectItem: (item) =>
-                vscode.window.showInformationMessage(`Focus: ${item}`),
-            canPickMany: true,
-        },
-    );
-    vscode.window.showInformationMessage(`Got: ${result}`);
-}
+    );}
 
 function startTreeViews() {
     vscode.window.createTreeView('spacesViewer', {

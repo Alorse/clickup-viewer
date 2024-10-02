@@ -6,7 +6,7 @@ export class LocalStorageController {
     public async getValue(key: string): Promise<any> {
         const value = await this.storage.get(key);
         if (value === undefined || value === null) {
-            throw new Error(`No se encontró el valor para la clave ${key}`);
+            return null;
         }
         return value;
     }
