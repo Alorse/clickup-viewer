@@ -3,7 +3,7 @@ import { ApiWrapper } from '../lib/ApiWrapper';
 import { TrackingItem } from './timesItem/TrackingItem';
 import { IntervalItem } from './timesItem/IntervalItem';
 import { Task, Tracking } from '../types';
-import { formatTrackingDuration } from '../lib/timer';
+import { formatTrackingDuration } from '../lib/Timer';
 
 const collapsedConst = vscode.TreeItemCollapsibleState.Collapsed;
 const noCollapsedConst = vscode.TreeItemCollapsibleState.None;

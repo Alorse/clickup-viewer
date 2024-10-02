@@ -1,6 +1,6 @@
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
 import { Interval } from '../../types';
-import { unixtimeToString, formatInterval } from '../../lib/timer';
+import { unixtimeToString, formatInterval } from '../../lib/Timer';
 
 export class IntervalItem extends TreeItem {
     constructor(

@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import { Task, Time, Tracking } from '../types';
-import Timer from '../lib/timer';
+import Timer from '../lib/Timer';
 import { ApiWrapper } from '../lib/ApiWrapper';
-import { TaskStatusBarItem } from '../lib/taskStatusBarItem';
+import { TaskStatusBarItem } from '../lib/TaskStatusBarItem';
 import { LocalStorageController } from './LocalStorageController';
 import { TimeTrackerListProvider } from '../treeItems/TimeTrackerListProvider';
 

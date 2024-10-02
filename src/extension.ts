@@ -2,14 +2,14 @@ import * as vscode from 'vscode';
 import * as l10n from '@vscode/l10n';
 import * as translations from '../l10n/bundle.l10n.json';
 import { LocalStorageController } from './controllers/LocalStorageController';
-import { TaskListProvider } from './treeItems/taskListProvider';
-import { MyTaskListProvider } from './treeItems/myTaskListProvider';
+import { TaskListProvider } from './treeItems/TaskListProvider';
+import { MyTaskListProvider } from './treeItems/MyTaskListProvider';
 import { TaskItemDecorationProvider } from './providers/TaskItemDecorationProvider';
 import { TimeTrackerListProvider } from './treeItems/TimeTrackerListProvider';
 import TokenManager from './lib/TokenManager';
 import { ApiWrapper } from './lib/ApiWrapper';
 import { User, Team, Task } from './types';
-import { OpenTaskPanel } from './panelItems/openTaskPanel';
+import { OpenTaskPanel } from './panelItems/OpenTaskPanel';
 import { TaskController } from './controllers/TaskController';
 import { ItemsController } from './controllers/ItemsController';
 

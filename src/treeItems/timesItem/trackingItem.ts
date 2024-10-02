@@ -1,7 +1,7 @@
 
 import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
 import { Tracking } from '../../types';
-import { formatDuration } from '../../lib/timer';
+import { formatDuration } from '../../lib/Timer';
 
 export class TrackingItem extends TreeItem {
     constructor(
