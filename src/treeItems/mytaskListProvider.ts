@@ -31,16 +31,23 @@ export class MyTaskListProvider
     }
 
     async getChildren(element?: Team | Task): Promise<vscode.TreeItem[]> {
+        const filteredSpaces = [90020068902];
+        // SingleTeam
+        // If there is only one team, show all its tasks without creating a TeamItem
         if (element === undefined && this.teams.length === 1) {
             const tasks: Task[] = await this.apiwrapper.getMyTask(
                 this.teams[0].id,
                 this.userId.toString(),
+                filteredSpaces,
                 true,
             );
             return Promise.resolve(
                 tasks.map((task: Task) => new TaskItem(task)),
             );
         }
+        // MultiTeam
+        // If there are more than one team, create a TeamItem for each one
+        // then show the corresponding tasks inside each one
         let resolve: any = [];
         if (element === undefined) {
             resolve = Object.values(this.teams).map((team: Team) => {
@@ -56,6 +63,7 @@ export class MyTaskListProvider
             const tasks: Task[] = await this.apiwrapper.getMyTask(
                 element.team.id,
                 this.userId.toString(),
+                filteredSpaces,
                 true,
             );
             for (const task of tasks) {
