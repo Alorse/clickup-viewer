@@ -1,4 +1,5 @@
 {
+    "deleteToken.title": "Delete Token",
     "description": "A VS Code extension for displaying projects and tasks, with a task list view, task preview and time tracker.",
     "displayName": "ClickUp Viewer",
     "myTasks.name": "My Tasks",

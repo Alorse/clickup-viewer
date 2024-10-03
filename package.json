@@ -15,6 +15,15 @@
     "main": "./out/extension.js",
     "l10n": "./l10n",
     "contributes": {
+        "configuration": {
+            "properties": {
+                "clickup.apiToken": {
+                    "type": "string",
+                    "default": "",
+                    "description": "The ClickUp API token for accessing tasks and time tracking."
+                }
+            }
+        },
         "commands": [
             {
                 "command": "clickup.setToken",
@@ -25,6 +34,11 @@
                 "command": "clickup.getToken",
                 "title": "%getToken.title%",
                 "category": "%displayName%"
+            },
+            {
+                "command": "clickup.deleteToken",
+                "title": "%deleteToken.title%",
+                "category": "ClickUp"
             },
             {
                 "command": "clickup.refreshSpaces",
@@ -75,16 +89,24 @@
         "views": {
             "clickup": [
                 {
+                    "id": "setupView",
+                    "name": "Setup Instructions",
+                    "when": "config.clickup.apiToken == ''"
+                },
+                {
                     "id": "spacesViewer",
-                    "name": "%workspaces.name%"
+                    "name": "%workspaces.name%",
+                    "when": "config.clickup.apiToken != ''"
                 },
                 {
                     "id": "myTasksViewer",
-                    "name": "%myTasks.name%"
+                    "name": "%myTasks.name%",
+                    "when": "config.clickup.apiToken != ''"
                 },
                 {
                     "id": "timeTracker",
-                    "name": "%timeTracker.name%"
+                    "name": "%timeTracker.name%",
+                    "when": "config.clickup.apiToken != ''"
                 }
             ]
         },
@@ -140,6 +162,20 @@
                     "light": "#fbcb5c",
                     "dark": "#fbcb5c"
                 }
+            }
+        ],
+        "viewsWelcome": [
+            {
+                "view": "setupView",
+                "contents": "To access your ClickUp tasks, you need to set your ClickUp API token.\nFollow these steps to get your token:"
+            },
+            {
+                "view": "setupView",
+                "contents": "1. Go to the  [ClickUp API settings page](https://app.clickup.com/settings/apps).\n2. Click the \"Generate\" button.\n3. Copy your API token.\n4. Click the button below to set the token."
+            },
+            {
+                "view": "setupView",
+                "contents": "[Set Token](command:clickup.setToken)"
             }
         ]
     },
