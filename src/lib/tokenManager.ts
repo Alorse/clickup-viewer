@@ -1,4 +1,3 @@
-import { LocalStorageController } from '../controllers/LocalStorageController';
 import * as vscode from 'vscode';
 
 interface L10n {
@@ -6,73 +5,62 @@ interface L10n {
 }
 
 export default class TokenManager {
-    storageManager?: LocalStorageController;
     token?: string = undefined;
     regex = /^[a-z]{2}[_]\d+[_].{32}/g;
     l10n: L10n;
 
-    constructor(storageManager: LocalStorageController, l10n: L10n) {
-        this.storageManager = storageManager;
+    constructor(l10n: L10n) {
         this.l10n = l10n;
     }
-    /**
-     *
-     *
-     * @return {*}  {(Promise<string | undefined>)}
-     * @memberof TokenManager
-     */
+
     async init(): Promise<string | undefined> {
         this.token = await this.getToken();
-        if (await this.isValid()) {
+
+        if (this.token == '') {
+            return;
+        } else if (await this.isValid()) {
             return this.token;
         }
 
         return undefined;
     }
-    /**
-     *
-     *
-     * @return {*}
-     * @memberof TokenManager
-     */
+
     async askToken() {
-        const token = await vscode.window.showInputBox({
+        this.token = await vscode.window.showInputBox({
             ignoreFocusOut: true,
-            placeHolder: 'Paste your ClickUp Personal API Token...',
+            placeHolder: 'Enter your ClickUp API Token...',
         });
 
-        if (!token) {
+        if (!this.token) {
+            return;
+        } else if (!this.isValid()) {
             return;
         }
 
-        return await this.setToken(token);
+        return this.setToken(this.token);
     }
-    /**
-     *
-     *
-     * @param {(string | undefined)} token
-     * @return {*}  {Promise<boolean>}
-     * @memberof TokenManager
-     */
+
     async setToken(token: string | undefined): Promise<boolean> {
-        this.storageManager?.setValue('token', token);
+        const config = vscode.workspace.getConfiguration('clickup');
+        await config.update(
+            'apiToken',
+            token,
+            vscode.ConfigurationTarget.Global,
+        );
+        vscode.window.showInformationMessage(
+            'ClickUp API Token set successfully!',
+        );
+        // setTimeout(() => {
+        //     vscode.commands.executeCommand('workbench.action.reloadWindow');
+        // }, 500);
         return true;
     }
-    /**
-     *
-     *
-     * @return {*}  {Promise<string>}
-     * @memberof TokenManager
-     */
+
     async getToken(): Promise<string | undefined> {
-        return await this.storageManager?.getValue('token');
+        const config = vscode.workspace.getConfiguration('clickup');
+        return (await config.get<string>('apiToken')) || '';
     }
-    /**
-     *
-     *
-     * @return {*}
-     * @memberof TokenManager
-     */
+
     async hasToken() {
         const token = await this.getToken();
         if (token) {
@@ -80,25 +68,16 @@ export default class TokenManager {
         }
         return false;
     }
-    /**
-     *
-     *
-     * @return {*}
-     * @memberof TokenManager
-     */
+
     async delete() {
-        await this.storageManager?.setValue('token', undefined);
+        const config = vscode.workspace.getConfiguration('clickup');
+        await config.update('apiToken', '', vscode.ConfigurationTarget.Global);
         return true;
     }
-    /**
-     *
-     *
-     * @return {*}
-     * @memberof TokenManager
-     */
-    async isValid() {
+
+    isValid() {
         // If token doesn't exists show error message
-        if (this.token === undefined) {
+        if (this.token === undefined || this.token === null) {
             vscode.window.showInformationMessage(
                 this.l10n.t('NO_CLICKUP_TOKEN_SET'),
             );
@@ -106,7 +85,7 @@ export default class TokenManager {
         }
 
         if (this.token.match(this.regex) === null) {
-            vscode.window.showInformationMessage(this.l10n.t('INVALID_TOKEN'));
+            vscode.window.showErrorMessage(this.l10n.t('INVALID_TOKEN'));
             return false;
         }
 
