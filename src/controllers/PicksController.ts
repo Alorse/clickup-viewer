@@ -9,12 +9,15 @@ export class PicksController {
         this.storageManager = storageManager;
     }
 
-    public async showQuickPick(teamId: string, spaces: Space[]) {
+    public async showQuickPick(
+        teamId: string,
+        spaces: Space[],
+    ): Promise<boolean> {
         if (spaces.length <= 1) {
             vscode.window.showInformationMessage(
                 'This filter is only available for teams with more than 1 space.',
             );
-            return;
+            return false;
         }
 
         const savedSpaces = await this.storageManager.getValue(
@@ -40,6 +43,8 @@ export class PicksController {
                 `filtered-spaces-${teamId}`,
                 filteredSpaces.map((space) => space.id),
             );
+            return true;
         }
+        return false;
     }
 }

@@ -136,7 +136,13 @@ export async function activate(context: vscode.ExtensionContext) {
         'clickup.filterMyTaskSpaces',
         async (teamItem) => {
             const spaces = await itemsController.getSpaces(teamItem.id);
-            picksController.showQuickPick(teamItem.id, spaces);
+            const picked = await picksController.showQuickPick(
+                teamItem.id,
+                spaces,
+            );
+            if (picked) {
+                myTaskListProvider.refresh();
+            }
         },
     );
 }
