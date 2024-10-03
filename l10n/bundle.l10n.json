@@ -1,5 +1,5 @@
 {
-    "INVALID_TOKEN": "Invalid Token!",
+    "INVALID_TOKEN": "Invalid ClickUp Token!",
     "NO": "No",
     "NO_CLICKUP_TOKEN_SET": "No clickup token has been set!",
     "NO_LIST_ID": "Impossible to retrieve states from reference list",

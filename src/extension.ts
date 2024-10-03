@@ -26,46 +26,19 @@ let taskController: TaskController;
 let timeTrackerListProvider: TimeTrackerListProvider;
 let itemsController: ItemsController;
 let picksController: PicksController;
+let context: vscode.ExtensionContext;
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(rootContext: vscode.ExtensionContext) {
     l10n.config({
         contents: translations,
     });
-
+    context = rootContext;
     storageManager = new LocalStorageController(context.workspaceState);
-    tokenManager = new TokenManager(storageManager, l10n);
+    tokenManager = new TokenManager(l10n);
     token = await tokenManager.init();
 
     if (token) {
-        //If token exists fetch data
-        apiWrapper = new ApiWrapper(token);
-        itemsController = new ItemsController(apiWrapper, storageManager);
-        picksController = new PicksController(storageManager);
-        me = await apiWrapper.getUser();
-
-        teams = await itemsController.getTeams();
-        taskListProvider = new TaskListProvider(
-            teams,
-            apiWrapper,
-            storageManager,
-        );
-        myTaskListProvider = new MyTaskListProvider(
-            apiWrapper,
-            teams,
-            me.id,
-            storageManager,
-        );
-        timeTrackerListProvider = new TimeTrackerListProvider(apiWrapper);
-
-        taskController = new TaskController(
-            apiWrapper,
-            storageManager,
-            timeTrackerListProvider,
-        );
-        taskController.initSelectedTask();
-
-        registerDecorators(context);
-        startTreeViews();
+        startExtensions(token);
     }
 
     vscode.commands.registerCommand('clickup.setToken', async () => {
@@ -78,6 +51,7 @@ export async function activate(context: vscode.ExtensionContext) {
                     vscode.window.showInformationMessage(
                         `${l10n.t('SET_TOKEN')} ${me.username}`,
                     );
+                    startExtensions(token);
                 } catch (error) {
                     vscode.window.showErrorMessage(l10n.t('INVALID_TOKEN'));
                     // eslint-disable-next-line no-console
@@ -95,6 +69,12 @@ export async function activate(context: vscode.ExtensionContext) {
             vscode.window.showInformationMessage(
                 l10n.t('YOUR_TOKEN {0}', token),
             );
+        }
+    });
+
+    vscode.commands.registerCommand('clickup.deleteToken', async () => {
+        if (await tokenManager.delete()) {
+            vscode.window.showInformationMessage('ClickUp API Token deleted, bye bye!');
         }
     });
 
@@ -145,6 +125,37 @@ export async function activate(context: vscode.ExtensionContext) {
             }
         },
     );
+}
+
+async function startExtensions(token: string) {
+    apiWrapper = new ApiWrapper(token);
+    itemsController = new ItemsController(apiWrapper, storageManager);
+    picksController = new PicksController(storageManager);
+    me = await apiWrapper.getUser();
+
+    teams = await itemsController.getTeams();
+    taskListProvider = new TaskListProvider(
+        teams,
+        apiWrapper,
+        storageManager,
+    );
+    myTaskListProvider = new MyTaskListProvider(
+        apiWrapper,
+        teams,
+        me.id,
+        storageManager,
+    );
+    timeTrackerListProvider = new TimeTrackerListProvider(apiWrapper);
+
+    taskController = new TaskController(
+        apiWrapper,
+        storageManager,
+        timeTrackerListProvider,
+    );
+    taskController.initSelectedTask();
+
+    registerDecorators(context);
+    startTreeViews();
 }
 
 function startTreeViews() {
