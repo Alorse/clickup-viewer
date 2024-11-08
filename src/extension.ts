@@ -38,20 +38,22 @@ export async function activate(rootContext: vscode.ExtensionContext) {
     token = await tokenManager.init();
 
     if (token) {
-        startExtensions(token);
+        apiWrapper = new ApiWrapper(token);
+        me = await apiWrapper.getUser();
+        startExtensions();
     }
 
     vscode.commands.registerCommand('clickup.setToken', async () => {
         if (await tokenManager.askToken()) {
             const token = await tokenManager.getToken();
             if (token) {
-                apiWrapper = new ApiWrapper(token);
                 try {
+                    apiWrapper = new ApiWrapper(token);
                     me = await apiWrapper.getUser();
                     vscode.window.showInformationMessage(
                         `${l10n.t('SET_TOKEN')} ${me.username}`,
                     );
-                    startExtensions(token);
+                    startExtensions();
                 } catch (error) {
                     vscode.window.showErrorMessage(l10n.t('INVALID_TOKEN'));
                     // eslint-disable-next-line no-console
@@ -127,11 +129,9 @@ export async function activate(rootContext: vscode.ExtensionContext) {
     );
 }
 
-async function startExtensions(token: string) {
-    apiWrapper = new ApiWrapper(token);
+async function startExtensions() {
     itemsController = new ItemsController(apiWrapper, storageManager);
     picksController = new PicksController(storageManager);
-    me = await apiWrapper.getUser();
 
     teams = await itemsController.getTeams();
     taskListProvider = new TaskListProvider(

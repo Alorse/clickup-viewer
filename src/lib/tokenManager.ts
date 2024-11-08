@@ -8,9 +8,11 @@ export default class TokenManager {
     token?: string = undefined;
     regex = /^[a-z]{2}[_]\d+[_].{32}/g;
     l10n: L10n;
+    config: vscode.WorkspaceConfiguration;
 
     constructor(l10n: L10n) {
         this.l10n = l10n;
+        this.config = vscode.workspace.getConfiguration('clickup');
     }
 
     async init(): Promise<string | undefined> {
@@ -25,7 +27,7 @@ export default class TokenManager {
         return undefined;
     }
 
-    async askToken() {
+    async askToken(): Promise<boolean | undefined> {
         this.token = await vscode.window.showInputBox({
             ignoreFocusOut: true,
             placeHolder: 'Enter your ClickUp API Token...',
@@ -40,9 +42,8 @@ export default class TokenManager {
         return this.setToken(this.token);
     }
 
-    async setToken(token: string | undefined): Promise<boolean> {
-        const config = vscode.workspace.getConfiguration('clickup');
-        await config.update(
+    async setToken(token: string | undefined): Promise<boolean | undefined> {
+        await this.config.update(
             'apiToken',
             token,
             vscode.ConfigurationTarget.Global,
@@ -50,28 +51,19 @@ export default class TokenManager {
         vscode.window.showInformationMessage(
             'ClickUp API Token set successfully!',
         );
-        // setTimeout(() => {
-        //     vscode.commands.executeCommand('workbench.action.reloadWindow');
-        // }, 500);
+        setTimeout(() => {
+            vscode.commands.executeCommand('workbench.action.reloadWindow');
+        }, 500);
         return true;
     }
 
     async getToken(): Promise<string | undefined> {
         const config = vscode.workspace.getConfiguration('clickup');
-        return (await config.get<string>('apiToken')) || '';
-    }
-
-    async hasToken() {
-        const token = await this.getToken();
-        if (token) {
-            return true;
-        }
-        return false;
+        return (config.get<string>('apiToken')) || '';
     }
 
     async delete() {
-        const config = vscode.workspace.getConfiguration('clickup');
-        await config.update('apiToken', '', vscode.ConfigurationTarget.Global);
+        await this.config.update('apiToken', '', vscode.ConfigurationTarget.Global);
         return true;
     }
 
