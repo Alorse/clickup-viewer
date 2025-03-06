@@ -8,7 +8,9 @@ export class TaskItem extends TreeItem {
         public readonly collapsibleState: TreeItemCollapsibleState,
     ) {
         const start = unixtimeToString(Number.parseInt(TimeItem.start));
-        const end = TimeItem.end ? unixtimeToString(Number.parseInt(TimeItem.end)) : 'undefined';
+        const end = TimeItem.end
+            ? unixtimeToString(Number.parseInt(TimeItem.end))
+            : 'undefined';
 
         super(TimeItem.description, collapsibleState);
         this.id = `${TimeItem.id}`;

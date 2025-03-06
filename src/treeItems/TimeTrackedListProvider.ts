@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { ApiWrapper } from '../lib/ApiWrapper';
-import { Time, User } from '../types';
+import { Time, Team } from '../types';
 import { formatTimeDuration } from '../lib/Timer';
 import { TaskItem } from './timesItem/TaskItem';
 
@@ -16,12 +16,12 @@ export class TimeTrackedListProvider
         this._onDidChangeTreeData.event;
 
     private apiwrapper: ApiWrapper;
-    private user: User;
+    private teams: Team[];
     private trackedTimeToday?: Time[];
 
-    constructor(apiWrapper: ApiWrapper, user: User) {
+    constructor(apiWrapper: ApiWrapper, teams: Team[]) {
         this.apiwrapper = apiWrapper;
-        this.user = user;
+        this.teams = teams;
     }
 
     getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
