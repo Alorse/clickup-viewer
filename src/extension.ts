@@ -146,7 +146,11 @@ async function startExtensions() {
         storageManager,
     );
     timeTrackerListProvider = new TimeTrackerListProvider(apiWrapper);
-    timeTrackedListProvider = new TimeTrackedListProvider(apiWrapper, teams, storageManager);
+    timeTrackedListProvider = new TimeTrackedListProvider(
+        apiWrapper,
+        teams,
+        storageManager,
+    );
 
     taskController = new TaskController(
         apiWrapper,
