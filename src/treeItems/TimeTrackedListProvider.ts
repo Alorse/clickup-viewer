@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { ApiWrapper } from '../lib/ApiWrapper';
 import { Time, User } from '../types';
+import { formatTimeDuration } from '../lib/Timer';
 
 const noCollapsedConst = vscode.TreeItemCollapsibleState.None;
 
@@ -114,13 +115,6 @@ export class TimeTrackedListProvider
                 (acc, time) => acc + parseInt(time.duration, 10),
                 0,
             ) / 1000;
-        return this.formatTrackingDuration(totalDuration);
-    }
-
-    private formatTrackingDuration(duration: number): string {
-        const hours = Math.floor(duration / 3600);
-        const minutes = Math.floor((duration % 3600) / 60);
-        const seconds = Math.floor(duration % 60);
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        return formatTimeDuration(totalDuration);
     }
 }
