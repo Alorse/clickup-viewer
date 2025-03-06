@@ -6,8 +6,6 @@ import { TaskItem } from './timesItem/TaskItem';
 import { TeamItem } from './items/TeamItem';
 import { LocalStorageController } from '../controllers/LocalStorageController';
 
-const noCollapsedConst = vscode.TreeItemCollapsibleState.None;
-
 export class TimeTrackedListProvider
     implements vscode.TreeDataProvider<vscode.TreeItem>
 {
@@ -21,9 +19,13 @@ export class TimeTrackedListProvider
     private teams: Team[];
     private trackedTimeToday?: Time[];
     private storageManager: LocalStorageController;
-    private collapsedConst = vscode.TreeItemCollapsibleState.Collapsed;
+    private collapsedConst = vscode.TreeItemCollapsibleState;
 
-    constructor(apiWrapper: ApiWrapper, teams: Team[], storageManager: LocalStorageController) {
+    constructor(
+        apiWrapper: ApiWrapper,
+        teams: Team[],
+        storageManager: LocalStorageController,
+    ) {
         this.apiwrapper = apiWrapper;
         this.teams = teams;
         this.storageManager = storageManager;
@@ -42,14 +44,20 @@ export class TimeTrackedListProvider
         }
 
         if (element === undefined) {
-            resolve = Object.values(this.teams).map((team: Team) => {
-                return new TeamItem(
-                    team.id,
-                    team,
-                    this.collapsedConst,
-                    this.storageManager,
-                );
-            });
+            resolve = Object.values(this.teams).map(
+                (team: Team, index: number) => {
+                    const collapsibleState =
+                        index === 0
+                            ? this.collapsedConst.Expanded
+                            : this.collapsedConst.Collapsed;
+                    return new TeamItem(
+                        team.id,
+                        team,
+                        collapsibleState,
+                        this.storageManager,
+                    );
+                },
+            );
         }
 
         if (element instanceof TeamItem) {
@@ -106,19 +114,20 @@ export class TimeTrackedListProvider
 
     private async getTrackedTime(
         resolve: Array<vscode.TreeItem>,
-        teamId: string) {
-            this.trackedTimeToday = await this.getTrackedTimeToday(teamId);
-            this.headerItem(resolve, this.trackedTimeToday, 'today');
-            for (const tracking of this.trackedTimeToday) {
-                resolve.push(new TaskItem(tracking, noCollapsedConst));
-            }
-
-            const trackedTimeLastWeek = await this.getTrackedTimeLastWeek(teamId);
-            this.headerItem(resolve, trackedTimeLastWeek, 'last week');
-
-            const trackedTimeThisMonth = await this.getTrackedTimeThisMonth(teamId);
-            this.headerItem(resolve, trackedTimeThisMonth, 'this month');
+        teamId: string,
+    ) {
+        this.trackedTimeToday = await this.getTrackedTimeToday(teamId);
+        this.headerItem(resolve, this.trackedTimeToday, 'today');
+        for (const tracking of this.trackedTimeToday) {
+            resolve.push(new TaskItem(tracking, this.collapsedConst.None));
         }
+
+        const trackedTimeLastWeek = await this.getTrackedTimeLastWeek(teamId);
+        this.headerItem(resolve, trackedTimeLastWeek, 'last week');
+
+        const trackedTimeThisMonth = await this.getTrackedTimeThisMonth(teamId);
+        this.headerItem(resolve, trackedTimeThisMonth, 'this month');
+    }
 
     private headerItem(
         resolve: Array<vscode.TreeItem>,
@@ -128,7 +137,7 @@ export class TimeTrackedListProvider
         const totalTime = this.formatTrackingTotalDuration(trackedTime);
         const header = new vscode.TreeItem(
             `Tracked Time ${interval}: ${totalTime}`,
-            noCollapsedConst,
+            this.collapsedConst.None,
         );
         header.iconPath = new vscode.ThemeIcon('history');
         header.tooltip = `Tracked time ${interval}: ${trackedTime}`;
