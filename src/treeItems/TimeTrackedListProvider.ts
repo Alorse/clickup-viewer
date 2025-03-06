@@ -3,6 +3,8 @@ import { ApiWrapper } from '../lib/ApiWrapper';
 import { Time, Team } from '../types';
 import { formatTimeDuration } from '../lib/Timer';
 import { TaskItem } from './timesItem/TaskItem';
+import { TeamItem } from './items/TeamItem';
+import { LocalStorageController } from '../controllers/LocalStorageController';
 
 const noCollapsedConst = vscode.TreeItemCollapsibleState.None;
 
@@ -18,10 +20,13 @@ export class TimeTrackedListProvider
     private apiwrapper: ApiWrapper;
     private teams: Team[];
     private trackedTimeToday?: Time[];
+    private storageManager: LocalStorageController;
+    private collapsedConst = vscode.TreeItemCollapsibleState.Collapsed;
 
-    constructor(apiWrapper: ApiWrapper, teams: Team[]) {
+    constructor(apiWrapper: ApiWrapper, teams: Team[], storageManager: LocalStorageController) {
         this.apiwrapper = apiWrapper;
         this.teams = teams;
+        this.storageManager = storageManager;
     }
 
     getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
@@ -29,21 +34,26 @@ export class TimeTrackedListProvider
     }
 
     async getChildren(element?: vscode.TreeItem): Promise<vscode.TreeItem[]> {
-        const resolve: Array<vscode.TreeItem> = [];
+        let resolve: any = [];
+
+        if (element === undefined && this.teams.length === 1) {
+            const teamId = this.teams[0].id;
+            await this.getTrackedTime(resolve, teamId);
+        }
 
         if (element === undefined) {
-            const teamId = this.teams[0].id;
-            this.trackedTimeToday = await this.getTrackedTimeToday(teamId);
-            this.headerItem(resolve, this.trackedTimeToday, 'today');
-            for (const tracking of this.trackedTimeToday) {
-                resolve.push(new TaskItem(tracking, noCollapsedConst));
-            }
+            resolve = Object.values(this.teams).map((team: Team) => {
+                return new TeamItem(
+                    team.id,
+                    team,
+                    this.collapsedConst,
+                    this.storageManager,
+                );
+            });
+        }
 
-            const trackedTimeLastWeek = await this.getTrackedTimeLastWeek(teamId);
-            this.headerItem(resolve, trackedTimeLastWeek, 'last week');
-
-            const trackedTimeThisMonth = await this.getTrackedTimeThisMonth(teamId);
-            this.headerItem(resolve, trackedTimeThisMonth, 'this month');
+        if (element instanceof TeamItem) {
+            await this.getTrackedTime(resolve, element.team.id);
         }
 
         return Promise.resolve(resolve);
@@ -93,6 +103,22 @@ export class TimeTrackedListProvider
     refresh() {
         this._onDidChangeTreeData.fire(undefined);
     }
+
+    private async getTrackedTime(
+        resolve: Array<vscode.TreeItem>,
+        teamId: string) {
+            this.trackedTimeToday = await this.getTrackedTimeToday(teamId);
+            this.headerItem(resolve, this.trackedTimeToday, 'today');
+            for (const tracking of this.trackedTimeToday) {
+                resolve.push(new TaskItem(tracking, noCollapsedConst));
+            }
+
+            const trackedTimeLastWeek = await this.getTrackedTimeLastWeek(teamId);
+            this.headerItem(resolve, trackedTimeLastWeek, 'last week');
+
+            const trackedTimeThisMonth = await this.getTrackedTimeThisMonth(teamId);
+            this.headerItem(resolve, trackedTimeThisMonth, 'this month');
+        }
 
     private headerItem(
         resolve: Array<vscode.TreeItem>,
