@@ -6,6 +6,9 @@ import { TaskItem } from './timesItem/TaskItem';
 import { TeamItem } from './items/TeamItem';
 import { LocalStorageController } from '../controllers/LocalStorageController';
 
+const MIN_HOURS_TRACKED_TODAY = 3;
+const MIN_HOURS_TRACKED_LAST_WEEK = 15;
+
 export class TimeTrackedListProvider
     implements vscode.TreeDataProvider<vscode.TreeItem>
 {
@@ -117,22 +120,33 @@ export class TimeTrackedListProvider
         teamId: string,
     ) {
         this.trackedTimeToday = await this.getTrackedTimeToday(teamId);
-        this.headerItem(resolve, this.trackedTimeToday, 'today');
+        this.headerItem(
+            resolve,
+            this.trackedTimeToday,
+            'today',
+            MIN_HOURS_TRACKED_TODAY,
+        );
         for (const tracking of this.trackedTimeToday) {
             resolve.push(new TaskItem(tracking, this.collapsedConst.None));
         }
 
         const trackedTimeLastWeek = await this.getTrackedTimeLastWeek(teamId);
-        this.headerItem(resolve, trackedTimeLastWeek, 'last week');
+        this.headerItem(
+            resolve,
+            trackedTimeLastWeek,
+            'last week',
+            MIN_HOURS_TRACKED_LAST_WEEK,
+        );
 
         const trackedTimeThisMonth = await this.getTrackedTimeThisMonth(teamId);
-        this.headerItem(resolve, trackedTimeThisMonth, 'this month');
+        this.headerItem(resolve, trackedTimeThisMonth, 'this month', false);
     }
 
     private headerItem(
         resolve: Array<vscode.TreeItem>,
         trackedTime: Time[],
-        interval: string = 'today',
+        interval: string,
+        minHoursTracked: number | boolean,
     ): Promise<vscode.TreeItem[]> {
         const totalTime = this.formatTrackingTotalDuration(trackedTime);
         const header = new vscode.TreeItem(
@@ -141,6 +155,26 @@ export class TimeTrackedListProvider
         );
         header.iconPath = new vscode.ThemeIcon('history');
         header.tooltip = `Tracked time ${interval}: ${trackedTime}`;
+
+        if (typeof minHoursTracked === 'boolean' && minHoursTracked === false) {
+            resolve.push(header);
+            return Promise.resolve(resolve);
+        }
+        const totalDurationInSeconds =
+            trackedTime.reduce(
+                (acc, time) => acc + parseInt(time.duration, 10),
+                0,
+            ) / 1000;
+
+        if (totalDurationInSeconds === 0) {
+            header.resourceUri = this.createViewDecorationUri('Overdue');
+        } else if (
+            typeof minHoursTracked === 'number' &&
+            totalDurationInSeconds < minHoursTracked * 3600
+        ) {
+            header.resourceUri = this.createViewDecorationUri('ExpiresToday');
+        }
+
         resolve.push(header);
         return Promise.resolve(resolve);
     }
@@ -152,5 +186,19 @@ export class TimeTrackedListProvider
                 0,
             ) / 1000;
         return formatTimeDuration(totalDuration);
+    }
+
+    private createViewDecorationUri(overdue: string): vscode.Uri {
+        const scheme = 'clickup-viewer';
+        const uriString = `${scheme}://time-tracked`;
+        const uriQuery: { [key: string]: string } = {};
+        uriQuery.color = `clickup.taskItemLabel${overdue}`;
+        const uriObject = {
+            scheme: scheme,
+            authority: '',
+            query: new URLSearchParams(uriQuery).toString(),
+            fragment: '',
+        };
+        return vscode.Uri.parse(`${uriString}?${uriObject.query}`);
     }
 }
