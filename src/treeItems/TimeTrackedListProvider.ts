@@ -32,36 +32,35 @@ export class TimeTrackedListProvider
         const resolve: Array<vscode.TreeItem> = [];
 
         if (element === undefined) {
-            this.trackedTimeToday = await this.getTrackedTimeToday();
+            const teamId = this.teams[0].id;
+            this.trackedTimeToday = await this.getTrackedTimeToday(teamId);
             this.headerItem(resolve, this.trackedTimeToday, 'today');
             for (const tracking of this.trackedTimeToday) {
                 resolve.push(new TaskItem(tracking, noCollapsedConst));
             }
 
-            const trackedTimeLastWeek = await this.getTrackedTimeLastWeek();
+            const trackedTimeLastWeek = await this.getTrackedTimeLastWeek(teamId);
             this.headerItem(resolve, trackedTimeLastWeek, 'last week');
 
-            const trackedTimeThisMonth = await this.getTrackedTimeThisMonth();
+            const trackedTimeThisMonth = await this.getTrackedTimeThisMonth(teamId);
             this.headerItem(resolve, trackedTimeThisMonth, 'this month');
         }
 
         return Promise.resolve(resolve);
     }
 
-    async getTrackedTimeToday(): Promise<Time[]> {
+    async getTrackedTimeToday(teamId: string): Promise<Time[]> {
         const today = new Date();
         const startOfDay = new Date(today.setHours(0, 0, 0, 0));
         const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-        const trackedTime = await this.apiwrapper.getTimeEntries('529', {
+        const trackedTime = await this.apiwrapper.getTimeEntries(teamId, {
             start_date: startOfDay.getTime(),
             end_date: endOfDay.getTime(),
         });
-        // eslint-disable-next-line no-console
-        console.log('Today', trackedTime);
         return trackedTime;
     }
 
-    async getTrackedTimeLastWeek(): Promise<Time[]> {
+    async getTrackedTimeLastWeek(teamId: string): Promise<Time[]> {
         const today = new Date();
         const startOfWeek = new Date(
             today.setDate(today.getDate() - today.getDay()),
@@ -69,16 +68,14 @@ export class TimeTrackedListProvider
         const endOfWeek = new Date(
             today.setDate(today.getDate() - today.getDay() + 6),
         );
-        const trackedTime = await this.apiwrapper.getTimeEntries('529', {
+        const trackedTime = await this.apiwrapper.getTimeEntries(teamId, {
             start_date: startOfWeek.getTime(),
             end_date: endOfWeek.getTime(),
         });
-        // eslint-disable-next-line no-console
-        console.log('Last Week', trackedTime);
         return trackedTime;
     }
 
-    async getTrackedTimeThisMonth(): Promise<Time[]> {
+    async getTrackedTimeThisMonth(teamId: string): Promise<Time[]> {
         const today = new Date();
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         const endOfMonth = new Date(
@@ -86,7 +83,7 @@ export class TimeTrackedListProvider
             today.getMonth() + 1,
             0,
         );
-        const trackedTime = await this.apiwrapper.getTimeEntries('529', {
+        const trackedTime = await this.apiwrapper.getTimeEntries(teamId, {
             start_date: startOfMonth.getTime(),
             end_date: endOfMonth.getTime(),
         });
