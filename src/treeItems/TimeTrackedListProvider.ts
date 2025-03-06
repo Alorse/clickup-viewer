@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { ApiWrapper } from '../lib/ApiWrapper';
 import { Time, User } from '../types';
 import { formatTimeDuration } from '../lib/Timer';
+import { TaskItem } from './timesItem/TaskItem';
 
 const noCollapsedConst = vscode.TreeItemCollapsibleState.None;
 
@@ -33,6 +34,9 @@ export class TimeTrackedListProvider
         if (element === undefined) {
             this.trackedTimeToday = await this.getTrackedTimeToday();
             this.headerItem(resolve, this.trackedTimeToday, 'today');
+            for (const tracking of this.trackedTimeToday) {
+                resolve.push(new TaskItem(tracking, noCollapsedConst));
+            }
 
             const trackedTimeLastWeek = await this.getTrackedTimeLastWeek();
             this.headerItem(resolve, trackedTimeLastWeek, 'last week');

@@ -2,7 +2,7 @@ import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
 import { Time } from '../../types';
 import { unixtimeToString, formatTimeDuration } from '../../lib/Timer';
 
-export class TimeItem extends TreeItem {
+export class TaskItem extends TreeItem {
     constructor(
         public TimeItem: Time,
         public readonly collapsibleState: TreeItemCollapsibleState,
@@ -12,8 +12,8 @@ export class TimeItem extends TreeItem {
 
         super(TimeItem.description, collapsibleState);
         this.id = `${TimeItem.id}`;
-        this.label = `${TimeItem.task.name} : ${formatTimeDuration(parseInt(TimeItem.duration, 10))}`;
-        this.tooltip = `${start} - ${end}`;
+        this.label = `${TimeItem.task.custom_id ?? TimeItem.task.id} : ${formatTimeDuration(parseInt(TimeItem.duration, 10) / 1000)}`;
+        this.tooltip = `${TimeItem.task.name} : ${start} - ${end}`;
         this.iconPath = new ThemeIcon('watch');
     }
     contextValue = 'trackingItem';
