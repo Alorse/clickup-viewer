@@ -76,7 +76,9 @@ export async function activate(rootContext: vscode.ExtensionContext) {
 
     vscode.commands.registerCommand('clickup.deleteToken', async () => {
         if (await tokenManager.delete()) {
-            vscode.window.showInformationMessage('ClickUp API Token deleted, bye bye!');
+            vscode.window.showInformationMessage(
+                'ClickUp API Token deleted, bye bye!',
+            );
         }
     });
 
@@ -134,11 +136,7 @@ async function startExtensions() {
     picksController = new PicksController(storageManager);
 
     teams = await itemsController.getTeams();
-    taskListProvider = new TaskListProvider(
-        teams,
-        apiWrapper,
-        storageManager,
-    );
+    taskListProvider = new TaskListProvider(teams, apiWrapper, storageManager);
     myTaskListProvider = new MyTaskListProvider(
         apiWrapper,
         teams,

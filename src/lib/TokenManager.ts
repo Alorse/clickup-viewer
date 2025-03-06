@@ -59,11 +59,15 @@ export default class TokenManager {
 
     async getToken(): Promise<string | undefined> {
         const config = vscode.workspace.getConfiguration('clickup');
-        return (config.get<string>('apiToken')) || '';
+        return config.get<string>('apiToken') || '';
     }
 
     async delete() {
-        await this.config.update('apiToken', '', vscode.ConfigurationTarget.Global);
+        await this.config.update(
+            'apiToken',
+            '',
+            vscode.ConfigurationTarget.Global,
+        );
         return true;
     }
 
