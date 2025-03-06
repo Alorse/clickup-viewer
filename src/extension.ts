@@ -131,38 +131,6 @@ export async function activate(rootContext: vscode.ExtensionContext) {
             }
         },
     );
-
-    vscode.commands.registerCommand(
-        'clickup.showTrackedTimeToday',
-        async () => {
-            const items = await timeTrackedListProvider.getTrackedTimeToday();
-            vscode.window.showQuickPick(
-                items.map((item) => item.user.username),
-            );
-        },
-    );
-
-    vscode.commands.registerCommand(
-        'clickup.showTrackedTimeLastWeek',
-        async () => {
-            const items =
-                await timeTrackedListProvider.getTrackedTimeLastWeek();
-            vscode.window.showQuickPick(
-                items.map((item) => item.user.username),
-            );
-        },
-    );
-
-    vscode.commands.registerCommand(
-        'clickup.showTrackedTimeThisMonth',
-        async () => {
-            const items =
-                await timeTrackedListProvider.getTrackedTimeThisMonth();
-            vscode.window.showQuickPick(
-                items.map((item) => item.user.username),
-            );
-        },
-    );
 }
 
 async function startExtensions() {
