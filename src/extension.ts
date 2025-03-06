@@ -6,6 +6,7 @@ import { TaskListProvider } from './treeItems/TaskListProvider';
 import { MyTaskListProvider } from './treeItems/MyTaskListProvider';
 import { TaskItemDecorationProvider } from './providers/TaskItemDecorationProvider';
 import { TimeTrackerListProvider } from './treeItems/TimeTrackerListProvider';
+import { TimeTrackedListProvider } from './treeItems/TimeTrackedListProvider';
 import TokenManager from './lib/TokenManager';
 import { ApiWrapper } from './lib/ApiWrapper';
 import { User, Team, Task } from './types';
@@ -24,6 +25,7 @@ let me: User;
 let teams: Team[];
 let taskController: TaskController;
 let timeTrackerListProvider: TimeTrackerListProvider;
+let timeTrackedListProvider: TimeTrackedListProvider;
 let itemsController: ItemsController;
 let picksController: PicksController;
 let context: vscode.ExtensionContext;
@@ -129,6 +131,38 @@ export async function activate(rootContext: vscode.ExtensionContext) {
             }
         },
     );
+
+    vscode.commands.registerCommand(
+        'clickup.showTrackedTimeToday',
+        async () => {
+            const items = await timeTrackedListProvider.getTrackedTimeToday();
+            vscode.window.showQuickPick(
+                items.map((item) => item.user.username),
+            );
+        },
+    );
+
+    vscode.commands.registerCommand(
+        'clickup.showTrackedTimeLastWeek',
+        async () => {
+            const items =
+                await timeTrackedListProvider.getTrackedTimeLastWeek();
+            vscode.window.showQuickPick(
+                items.map((item) => item.user.username),
+            );
+        },
+    );
+
+    vscode.commands.registerCommand(
+        'clickup.showTrackedTimeThisMonth',
+        async () => {
+            const items =
+                await timeTrackedListProvider.getTrackedTimeThisMonth();
+            vscode.window.showQuickPick(
+                items.map((item) => item.user.username),
+            );
+        },
+    );
 }
 
 async function startExtensions() {
@@ -144,6 +178,7 @@ async function startExtensions() {
         storageManager,
     );
     timeTrackerListProvider = new TimeTrackerListProvider(apiWrapper);
+    timeTrackedListProvider = new TimeTrackedListProvider(apiWrapper, me);
 
     taskController = new TaskController(
         apiWrapper,
@@ -169,6 +204,11 @@ function startTreeViews() {
 
     vscode.window.createTreeView('timeTracker', {
         treeDataProvider: timeTrackerListProvider,
+        showCollapseAll: true,
+    });
+
+    vscode.window.createTreeView('myTimeTracked', {
+        treeDataProvider: timeTrackedListProvider,
         showCollapseAll: true,
     });
 }

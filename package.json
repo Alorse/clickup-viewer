@@ -107,6 +107,11 @@
                     "id": "timeTracker",
                     "name": "%timeTracker.name%",
                     "when": "config.clickup.apiToken != ''"
+                },
+                {
+                    "id": "myTimeTracked",
+                    "name": "%myTimeTracked.name%",
+                    "when": "config.clickup.apiToken != ''"
                 }
             ]
         },
@@ -120,6 +125,11 @@
                 {
                     "command": "clickup.refreshMyTasks",
                     "when": "view == myTasksViewer",
+                    "group": "navigation"
+                },
+                {
+                    "command": "clickup.refreshMyTimeTracked",
+                    "when": "view == myTimeTracked",
                     "group": "navigation"
                 }
             ],

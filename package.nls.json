@@ -10,6 +10,7 @@
     "setToken.title": "Set Token",
     "workspaces.name": "Workspaces",
     "timeTracker.name": "Time Tracker",
+    "myTimeTracked.name": "My Time Tracked",
     "getToken.title": "Show Token",
     "trackTime.title": "Track Time"
 }
