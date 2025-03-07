@@ -6,7 +6,7 @@ import { TaskItem } from './timesItem/TaskItem';
 import { TeamItem } from './items/TeamItem';
 import { LocalStorageController } from '../controllers/LocalStorageController';
 
-const MIN_HOURS_TRACKED_TODAY = 3;
+const MIN_HOURS_TRACKED_TODAY = 4;
 const MIN_HOURS_TRACKED_LAST_WEEK = 15;
 
 /**
@@ -220,7 +220,7 @@ export class TimeTrackedListProvider
                 0,
             ) / 1000;
 
-        if (totalDurationInSeconds === 0) {
+        if (totalDurationInSeconds < 1 * 3600) {
             header.resourceUri = this.createViewDecorationUri('Overdue');
         } else if (
             typeof minHoursTracked === 'number' &&
