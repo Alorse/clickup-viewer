@@ -2,6 +2,12 @@ import { TreeItem, TreeItemCollapsibleState, ThemeIcon } from 'vscode';
 import { Time } from '../../types';
 import { unixtimeToString, formatTimeDuration } from '../../lib/Timer';
 
+/**
+ * Creates an instance of TaskItem.
+ * 
+ * @param {Time} TimeItem - The time item associated with the task.
+ * @param {TreeItemCollapsibleState} collapsibleState - The collapsible state of the tree item.
+ */
 export class TaskItem extends TreeItem {
     constructor(
         public TimeItem: Time,
