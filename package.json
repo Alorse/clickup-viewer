@@ -53,6 +53,12 @@
                 "icon": "$(sync)"
             },
             {
+                "command": "clickup.refreshMyTimeTracked",
+                "title": "%refreshMyTask.title%",
+                "category": "%displayName%",
+                "icon": "$(sync)"
+            },
+            {
                 "command": "clickup.filterMyTaskSpaces",
                 "title": "%filterhMyTaskSpaces.title%",
                 "category": "%displayName%",

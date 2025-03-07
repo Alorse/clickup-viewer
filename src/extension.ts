@@ -96,15 +96,19 @@ export async function activate(rootContext: vscode.ExtensionContext) {
         myTaskListProvider.refresh();
     });
 
-    vscode.commands.registerCommand('clickup.openInWeb', (taskItem) => {
-        if (taskItem.task.url) {
-            vscode.env.openExternal(vscode.Uri.parse(taskItem.task.url));
-        }
+    vscode.commands.registerCommand('clickup.refreshMyTimeTracked', () => {
+        timeTrackedListProvider.refresh();
     });
 
     vscode.commands.registerCommand('clickup.trackedTime', (taskItem) => {
         timeTrackerListProvider.task = taskItem.task;
         timeTrackerListProvider.refresh();
+    });
+
+    vscode.commands.registerCommand('clickup.openInWeb', (taskItem) => {
+        if (taskItem.task.url) {
+            vscode.env.openExternal(vscode.Uri.parse(taskItem.task.url));
+        }
     });
 
     vscode.commands.registerCommand('clickup.startTrackingTime', (taskItem) => {
