@@ -20,8 +20,8 @@ export class TaskItem extends TreeItem {
 
         super(TimeItem.description, collapsibleState);
         this.id = `${TimeItem.id}`;
-        this.label = `${TimeItem.task.custom_id ?? TimeItem.task.id} : ${formatTimeDuration(parseInt(TimeItem.duration, 10) / 1000)}`;
-        this.tooltip = `${TimeItem.task.name} : ${start} - ${end}`;
+        this.label = `${formatTimeDuration(parseInt(TimeItem.duration, 10) / 1000)} : ${TimeItem.task.name}`;
+        this.tooltip = `${TimeItem.task.custom_id ?? TimeItem.task.id} : ${TimeItem.task.name} : ${start} - ${end}`;
         this.iconPath = new ThemeIcon('watch');
     }
     contextValue = 'trackingItem';
