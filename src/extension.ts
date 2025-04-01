@@ -120,6 +120,7 @@ export async function activate(rootContext: vscode.ExtensionContext) {
     });
     vscode.commands.registerCommand('clickup.stopTimer', () => {
         taskController.stopTimer();
+        timeTrackedListProvider.refresh();
     });
 
     vscode.commands.registerCommand(
