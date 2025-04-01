@@ -6,8 +6,8 @@ import { TaskItem } from './timesItem/TaskItem';
 import { TeamItem } from './items/TeamItem';
 import { LocalStorageController } from '../controllers/LocalStorageController';
 
-const MIN_HOURS_TRACKED_TODAY = 4;
-const MIN_HOURS_TRACKED_LAST_WEEK = 15;
+const MIN_HOURS_TRACKED_TODAY = 5;
+const MIN_HOURS_TRACKED_LAST_WEEK = MIN_HOURS_TRACKED_TODAY * 5;
 
 /**
  * Provides a tree data provider for displaying tracked time in a VS Code tree view.
