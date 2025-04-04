@@ -95,43 +95,7 @@ export class TimeTrackedListProvider
     }
 
     /**
-     * Retrieves the tracked time for today for the given team.
-     * @param teamId - The ID of the team.
-     * @returns A promise that resolves to an array of tracked time entries.
-     */
-    async getTrackedTimeToday(teamId: string): Promise<Time[]> {
-        const today = new Date();
-        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-        const trackedTime = await this.apiwrapper.getTimeEntries(teamId, {
-            start_date: startOfDay.getTime(),
-            end_date: endOfDay.getTime(),
-        });
-        return trackedTime;
-    }
-
-    /**
-     * Retrieves the tracked time for the last week for the given team.
-     * @param teamId - The ID of the team.
-     * @returns A promise that resolves to an array of tracked time entries.
-     */
-    async getTrackedTimeLastWeek(teamId: string): Promise<Time[]> {
-        const today = new Date();
-        const startOfWeek = new Date(
-            today.setDate(today.getDate() - today.getDay()),
-        );
-        const endOfWeek = new Date(
-            today.setDate(today.getDate() - today.getDay() + 6),
-        );
-        const trackedTime = await this.apiwrapper.getTimeEntries(teamId, {
-            start_date: startOfWeek.getTime(),
-            end_date: endOfWeek.getTime(),
-        });
-        return trackedTime;
-    }
-
-    /**
-     * Retrieves the tracked time entries for the current month for a given team.
+     * Retrieves the tracked time entries for the current month, including the start of the week if it overlaps with the previous month.
      *
      * @param teamId - The ID of the team for which to retrieve tracked time.
      * @returns A promise that resolves to an array of `Time` objects representing the tracked time entries for the current month.
@@ -139,13 +103,16 @@ export class TimeTrackedListProvider
     async getTrackedTimeThisMonth(teamId: string): Promise<Time[]> {
         const today = new Date();
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const startOfWeek = new Date(
+            startOfMonth.setDate(startOfMonth.getDate() - startOfMonth.getDay()),
+        );
         const endOfMonth = new Date(
             today.getFullYear(),
             today.getMonth() + 1,
             0,
         );
         const trackedTime = await this.apiwrapper.getTimeEntries(teamId, {
-            start_date: startOfMonth.getTime(),
+            start_date: startOfWeek.getTime(),
             end_date: endOfMonth.getTime(),
         });
         return trackedTime;
@@ -153,6 +120,46 @@ export class TimeTrackedListProvider
 
     refresh() {
         this._onDidChangeTreeData.fire(undefined);
+    }
+
+    /**
+     * Retrieves the tracked time for today for the given team by filtering the monthly data.
+     * @param teamId - The ID of the team.
+     * @param monthlyData - The tracked time data for the current month.
+     * @returns An array of tracked time entries for today.
+     */
+    private getTrackedTimeTodayFromMonthlyData(monthlyData: Time[]): Time[] {
+        const today = new Date();
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0)).getTime();
+        const endOfDay = new Date(today.setHours(23, 59, 59, 999)).getTime();
+
+        return monthlyData.filter(
+            (time) =>
+                Number.parseInt(time.start) >= startOfDay &&
+                Number.parseInt(time.start) <= endOfDay,
+        );
+    }
+
+    /**
+     * Retrieves the tracked time for the last week for the given team by filtering the monthly data.
+     * @param teamId - The ID of the team.
+     * @param monthlyData - The tracked time data for the current month.
+     * @returns An array of tracked time entries for the last week.
+     */
+    private getTrackedTimeLastWeekFromMonthlyData(monthlyData: Time[]): Time[] {
+        const today = new Date();
+        const startOfWeek = new Date(
+            today.setDate(today.getDate() - today.getDay()),
+        ).getTime();
+        const endOfWeek = new Date(
+            today.setDate(today.getDate() - today.getDay() + 6),
+        ).getTime();
+
+        return monthlyData.filter(
+            (time) =>
+                Number.parseInt(time.start) >= startOfWeek &&
+                Number.parseInt(time.start) <= endOfWeek,
+        );
     }
 
     /**
@@ -166,7 +173,10 @@ export class TimeTrackedListProvider
         resolve: Array<vscode.TreeItem>,
         teamId: string,
     ) {
-        this.trackedTimeToday = await this.getTrackedTimeToday(teamId);
+        const trackedTimeThisMonth = await this.getTrackedTimeThisMonth(teamId);
+
+        // Filter data for today
+        this.trackedTimeToday = this.getTrackedTimeTodayFromMonthlyData(trackedTimeThisMonth);
         this.headerItem(
             resolve,
             this.trackedTimeToday,
@@ -193,7 +203,8 @@ export class TimeTrackedListProvider
             resolve.push(new TaskItem(tracking, this.collapsedConst.None));
         }
 
-        const trackedTimeLastWeek = await this.getTrackedTimeLastWeek(teamId);
+        // Filter data for last week
+        const trackedTimeLastWeek = this.getTrackedTimeLastWeekFromMonthlyData(trackedTimeThisMonth);
         this.headerItem(
             resolve,
             trackedTimeLastWeek,
@@ -222,7 +233,7 @@ export class TimeTrackedListProvider
             resolve.push(new TaskItem(tracking, this.collapsedConst.None));
         }
 
-        const trackedTimeThisMonth = await this.getTrackedTimeThisMonth(teamId);
+        // Add header for the entire month
         this.headerItem(resolve, trackedTimeThisMonth, 'this month', false);
     }
 
