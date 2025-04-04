@@ -104,7 +104,9 @@ export class TimeTrackedListProvider
         const today = new Date();
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         const startOfWeek = new Date(
-            startOfMonth.setDate(startOfMonth.getDate() - startOfMonth.getDay()),
+            startOfMonth.setDate(
+                startOfMonth.getDate() - startOfMonth.getDay(),
+            ),
         );
         const endOfMonth = new Date(
             today.getFullYear(),
@@ -176,35 +178,40 @@ export class TimeTrackedListProvider
         const trackedTimeThisMonth = await this.getTrackedTimeThisMonth(teamId);
 
         // Filter data for today
-        this.trackedTimeToday = this.getTrackedTimeTodayFromMonthlyData(trackedTimeThisMonth);
+        this.trackedTimeToday =
+            this.getTrackedTimeTodayFromMonthlyData(trackedTimeThisMonth);
         this.headerItem(
             resolve,
             this.trackedTimeToday,
             'today',
             MIN_HOURS_TRACKED_TODAY,
         );
-        const groupedTrackedTimeToday = groupBy(this.trackedTimeToday, (t: Time) => t.task.id);
-        const uniqueTrackedTimeToday: SameTaskTime[] = Object.entries(groupedTrackedTimeToday).map(
-            ([, times]) => ({
-                task: times[0].task,
-                wid: times[0].wid,
-                user: times[0].user,
-                start: times.map((t: Time) => t.start),
-                end: times.map((t: Time) => t.end).filter(Boolean) as string[],
-                duration: times.map((t: Time) => t.duration),
-                tags: times.flatMap((t: Time) => t.tags),
-                at: times[0].at,
-                task_location: times[0].task_location,
-                task_tags: times[0].task_tags,
-                task_url: times[0].task_url,
-            }),
+        const groupedTrackedTimeToday = groupBy(
+            this.trackedTimeToday,
+            (t: Time) => t.task.id,
         );
+        const uniqueTrackedTimeToday: SameTaskTime[] = Object.entries(
+            groupedTrackedTimeToday,
+        ).map(([, times]) => ({
+            task: times[0].task,
+            wid: times[0].wid,
+            user: times[0].user,
+            start: times.map((t: Time) => t.start),
+            end: times.map((t: Time) => t.end).filter(Boolean) as string[],
+            duration: times.map((t: Time) => t.duration),
+            tags: times.flatMap((t: Time) => t.tags),
+            at: times[0].at,
+            task_location: times[0].task_location,
+            task_tags: times[0].task_tags,
+            task_url: times[0].task_url,
+        }));
         for (const tracking of uniqueTrackedTimeToday) {
             resolve.push(new TaskItem(tracking, this.collapsedConst.None));
         }
 
         // Filter data for last week
-        const trackedTimeLastWeek = this.getTrackedTimeLastWeekFromMonthlyData(trackedTimeThisMonth);
+        const trackedTimeLastWeek =
+            this.getTrackedTimeLastWeekFromMonthlyData(trackedTimeThisMonth);
         this.headerItem(
             resolve,
             trackedTimeLastWeek,
@@ -212,22 +219,25 @@ export class TimeTrackedListProvider
             MIN_HOURS_TRACKED_LAST_WEEK,
         );
 
-        const groupedTrackedTimeLastWeek = groupBy(trackedTimeLastWeek, (t: Time) => t.task.id);
-        const uniqueTrackedTimeLastWeek: SameTaskTime[] = Object.entries(groupedTrackedTimeLastWeek).map(
-            ([, times]) => ({
-                task: times[0].task,
-                wid: times[0].wid,
-                user: times[0].user,
-                start: times.map((t: Time) => t.start),
-                end: times.map((t: Time) => t.end).filter(Boolean) as string[],
-                duration: times.map((t: Time) => t.duration),
-                tags: times.flatMap((t: Time) => t.tags),
-                at: times[0].at,
-                task_location: times[0].task_location,
-                task_tags: times[0].task_tags,
-                task_url: times[0].task_url,
-            }),
+        const groupedTrackedTimeLastWeek = groupBy(
+            trackedTimeLastWeek,
+            (t: Time) => t.task.id,
         );
+        const uniqueTrackedTimeLastWeek: SameTaskTime[] = Object.entries(
+            groupedTrackedTimeLastWeek,
+        ).map(([, times]) => ({
+            task: times[0].task,
+            wid: times[0].wid,
+            user: times[0].user,
+            start: times.map((t: Time) => t.start),
+            end: times.map((t: Time) => t.end).filter(Boolean) as string[],
+            duration: times.map((t: Time) => t.duration),
+            tags: times.flatMap((t: Time) => t.tags),
+            at: times[0].at,
+            task_location: times[0].task_location,
+            task_tags: times[0].task_tags,
+            task_url: times[0].task_url,
+        }));
 
         for (const tracking of uniqueTrackedTimeLastWeek) {
             resolve.push(new TaskItem(tracking, this.collapsedConst.None));
