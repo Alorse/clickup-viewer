@@ -12,6 +12,7 @@ export class TaskItem extends TreeItem {
     constructor(
         public TimeItem: SameTaskTime,
         public readonly collapsibleState: TreeItemCollapsibleState,
+        public interval: string,
     ) {
         const totalDuration = TimeItem.duration.reduce(
             (acc, duration) => acc + parseInt(duration, 10),
@@ -25,7 +26,7 @@ export class TaskItem extends TreeItem {
         );
 
         super(TimeItem.task.name, collapsibleState);
-        this.id = `${TimeItem.task.id}`;
+        this.id = `${TimeItem.task.id}- ${interval}`;
         this.label = `${formatTimeDuration(totalDuration / 1000)} : ${TimeItem.task.name}`;
         this.tooltip =
             `Task: ${TimeItem.task.custom_id ?? TimeItem.task.id} : ${TimeItem.task.name}\n` +

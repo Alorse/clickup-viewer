@@ -206,7 +206,9 @@ export class TimeTrackedListProvider
             task_url: times[0].task_url,
         }));
         for (const tracking of uniqueTrackedTimeToday) {
-            resolve.push(new TaskItem(tracking, this.collapsedConst.None));
+            resolve.push(
+                new TaskItem(tracking, this.collapsedConst.None, 'today'),
+            );
         }
 
         // Filter data for last week
@@ -240,7 +242,9 @@ export class TimeTrackedListProvider
         }));
 
         for (const tracking of uniqueTrackedTimeLastWeek) {
-            resolve.push(new TaskItem(tracking, this.collapsedConst.None));
+            resolve.push(
+                new TaskItem(tracking, this.collapsedConst.None, 'lastWeek'),
+            );
         }
 
         // Add header for the entire month
