@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 import { ApiWrapper } from '../lib/ApiWrapper';
-import { Time, Team } from '../types';
+import { Time, Team, SameTaskTime } from '../types';
 import { formatTimeDuration } from '../lib/Timer';
 import { TaskItem } from './timesItem/TaskItem';
 import { TeamItem } from './items/TeamItem';
 import { LocalStorageController } from '../controllers/LocalStorageController';
+import { groupBy } from 'lodash';
 
 const MIN_HOURS_TRACKED_TODAY = 5;
 const MIN_HOURS_TRACKED_LAST_WEEK = MIN_HOURS_TRACKED_TODAY * 5;
@@ -172,7 +173,23 @@ export class TimeTrackedListProvider
             'today',
             MIN_HOURS_TRACKED_TODAY,
         );
-        for (const tracking of this.trackedTimeToday) {
+        const groupedTrackedTimeToday = groupBy(this.trackedTimeToday, (t: Time) => t.task.id);
+        const uniqueTrackedTimeToday: SameTaskTime[] = Object.entries(groupedTrackedTimeToday).map(
+            ([, times]) => ({
+                task: times[0].task,
+                wid: times[0].wid,
+                user: times[0].user,
+                start: times.map((t: Time) => t.start),
+                end: times.map((t: Time) => t.end).filter(Boolean) as string[],
+                duration: times.map((t: Time) => t.duration),
+                tags: times.flatMap((t: Time) => t.tags),
+                at: times[0].at,
+                task_location: times[0].task_location,
+                task_tags: times[0].task_tags,
+                task_url: times[0].task_url,
+            }),
+        );
+        for (const tracking of uniqueTrackedTimeToday) {
             resolve.push(new TaskItem(tracking, this.collapsedConst.None));
         }
 
@@ -183,6 +200,27 @@ export class TimeTrackedListProvider
             'last week',
             MIN_HOURS_TRACKED_LAST_WEEK,
         );
+
+        const groupedTrackedTimeLastWeek = groupBy(trackedTimeLastWeek, (t: Time) => t.task.id);
+        const uniqueTrackedTimeLastWeek: SameTaskTime[] = Object.entries(groupedTrackedTimeLastWeek).map(
+            ([, times]) => ({
+                task: times[0].task,
+                wid: times[0].wid,
+                user: times[0].user,
+                start: times.map((t: Time) => t.start),
+                end: times.map((t: Time) => t.end).filter(Boolean) as string[],
+                duration: times.map((t: Time) => t.duration),
+                tags: times.flatMap((t: Time) => t.tags),
+                at: times[0].at,
+                task_location: times[0].task_location,
+                task_tags: times[0].task_tags,
+                task_url: times[0].task_url,
+            }),
+        );
+
+        for (const tracking of uniqueTrackedTimeLastWeek) {
+            resolve.push(new TaskItem(tracking, this.collapsedConst.None));
+        }
 
         const trackedTimeThisMonth = await this.getTrackedTimeThisMonth(teamId);
         this.headerItem(resolve, trackedTimeThisMonth, 'this month', false);

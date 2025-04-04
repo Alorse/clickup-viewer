@@ -215,6 +215,20 @@ export type Time = {
     task_url: string;
 };
 
+export type SameTaskTime = {
+    task: Task;
+    wid: string;
+    user: User;
+    start: string[];
+    end?: string[];
+    duration: string[];
+    tags: Tag[];
+    at: string;
+    task_location: TaskLocation;
+    task_tags: Tag[];
+    task_url: string;
+};
+
 export type TaskLocation = {
     folder_id: string;
     list_id: string;
