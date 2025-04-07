@@ -103,20 +103,24 @@ export class TimeTrackedListProvider
     async getTrackedTimeThisMonth(teamId: string): Promise<Time[]> {
         const today = new Date();
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const startOfWeek = new Date(
-            startOfMonth.setDate(
-                startOfMonth.getDate() - startOfMonth.getDay(),
-            ),
-        );
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay()); // Start of the current week
+
+        // Determine the correct start date
+        const startDate =
+            startOfWeek < startOfMonth ? startOfWeek : startOfMonth;
+
         const endOfMonth = new Date(
             today.getFullYear(),
             today.getMonth() + 1,
             0,
         );
+
         const trackedTime = await this.apiwrapper.getTimeEntries(teamId, {
-            start_date: startOfWeek.getTime(),
+            start_date: startDate.getTime(),
             end_date: endOfMonth.getTime(),
         });
+
         return trackedTime;
     }
 
