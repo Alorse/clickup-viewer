@@ -147,24 +147,22 @@ export class TimeTrackedListProvider
     }
 
     /**
-     * Retrieves the tracked time for the last week for the given team by filtering the monthly data.
-     * @param teamId - The ID of the team.
+     * Retrieves the tracked time for the last 7 days for the given team by filtering the monthly data.
      * @param monthlyData - The tracked time data for the current month.
-     * @returns An array of tracked time entries for the last week.
+     * @returns An array of tracked time entries for the last 7 days.
      */
     private getTrackedTimeLastWeekFromMonthlyData(monthlyData: Time[]): Time[] {
         const today = new Date();
-        const startOfWeek = new Date(
-            today.setDate(today.getDate() - today.getDay()),
-        ).getTime();
-        const endOfWeek = new Date(
-            today.setDate(today.getDate() - today.getDay() + 6),
-        ).getTime();
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(today.getDate() - 7); // Go back 7 days
+
+        const startOfLastWeek = sevenDaysAgo.getTime();
+        const endOfToday = today.setHours(23, 59, 59, 999); // End of today
 
         return monthlyData.filter(
             (time) =>
-                Number.parseInt(time.start) >= startOfWeek &&
-                Number.parseInt(time.start) <= endOfWeek,
+                Number.parseInt(time.start) >= startOfLastWeek &&
+                Number.parseInt(time.start) <= endOfToday,
         );
     }
 
