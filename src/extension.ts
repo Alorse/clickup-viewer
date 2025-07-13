@@ -136,6 +136,10 @@ export async function activate(rootContext: vscode.ExtensionContext) {
             }
         },
     );
+
+    vscode.commands.registerCommand('clickup.changeTaskStatus', async (taskItem) => {
+        await taskController.changeTaskStatus(taskItem, myTaskListProvider);
+    });
 }
 
 async function startExtensions() {

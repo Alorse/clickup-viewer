@@ -108,6 +108,33 @@ export class TaskController {
         }
     }
 
+    public async changeTaskStatus(taskItem: any, myTaskListProvider: any) {
+        if (!taskItem || !taskItem.task) {
+            vscode.window.showErrorMessage('No task selected.');
+            return;
+        }
+        const listId = taskItem.task.list.id;
+        const taskId = taskItem.task.id;
+        try {
+            const statuses = await this.apiWrapper.getStatus(listId);
+            const items = statuses.map((status) => ({
+                label: status.status,
+                description: status.type,
+                picked: status.status === taskItem.task.status.status,
+            }));
+            const picked = await vscode.window.showQuickPick(items, {
+                placeHolder: 'Select new status for this task',
+            });
+            if (picked && picked.label !== taskItem.task.status.status) {
+                await this.apiWrapper.updateTask(taskId, { status: picked.label });
+                vscode.window.showInformationMessage(`Task status changed to ${picked.label}`);
+                myTaskListProvider.refresh();
+            }
+        } catch {
+            vscode.window.showErrorMessage('Failed to change task status.');
+        }
+    }
+
     public restoreTimer(teamId: string, taskId: string) {
         if (!teamId) {
             return;
